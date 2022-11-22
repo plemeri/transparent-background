@@ -1,0 +1,1 @@
+from transparent_background.Remover import Remover, console
