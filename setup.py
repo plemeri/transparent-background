@@ -18,8 +18,8 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
-    install_requires=['torch', 'torchvision', 'opencv-python', 'timm', 'tqdm', 'kornia==0.5.4', 'requests'],
+    python_requires='>=3.8',
+    install_requires=['torch>=1.7.1', 'torchvision>=0.8.2', 'opencv-python>=4.6.0.66', 'timm>=0.6.11', 'tqdm>=4.64.1', 'kornia==0.5.4'],
     entry_points={
         "console_scripts": [
             "transparent-background=transparent_background:console",
