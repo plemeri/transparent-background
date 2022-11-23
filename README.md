@@ -1,16 +1,13 @@
 # Transparent Background
 
 <p align="center">
-    <img src=https://github.com/plemeri/transparent-background/blob/main/figures/logo.png >
+    <img src=https://github.com/plemeri/transparent-background/blob/main/figures/logo.png width=50px>
+    <a href="https://github.com/plemeri/transparent-background/blob/main/LICENSE"><img  src="https://img.shields.io/badge/license-MIT-blue"></a>
+    <a href="https://pypi.org/project/transparent-background/"><image src="https://badge.fury.io/py/transparent-background.svg"></a>
 </p>
 
+This is a background removing tool powered by [InSPyReNet (ACCV 2022)](https://github.com/plemeri/InSPyReNet.git). You can easily remove background from the image or video or bunch of other stuffs when you can make the background transparent!
 
-This is a background removing tool powered by [InSPyReNet (ACCV 2022)](https://github.com/plemeri/InSPyReNet.git).
-
-<p align="center">
-<a href="https://github.com/plemeri/transparent-background/blob/main/LICENSE"><img  src="https://img.shields.io/badge/license-MIT-blue"></a>
-<a href="https://pypi.org/project/transparent-background/"><image src="https://badge.fury.io/py/transparent-background.svg"></a>
-</p>
 
 <p align="center">
     <img src=https://github.com/plemeri/transparent-background/blob/main/figures/demo_aeroplane.gif >
@@ -18,16 +15,18 @@ This is a background removing tool powered by [InSPyReNet (ACCV 2022)](https://g
 
 ## :inbox_tray: Install
 
-###
 ```
 # via pypi
 pip install transparent-background
+
+# via github
+pip install git+https://github.com/plemeri/transparent-background.git
 
 # locally
 pip install . e
 ```
 
-## Usage
+## :pencil2: Usage
 
 ### :computer: Command Line
 
@@ -87,12 +86,12 @@ Image.fromarray(out).save('samples/aeroplane_png.png')
 ```
 
 
-# :outbox_tray: Uninstall
+## :outbox_tray: Uninstall
 
 ```
 pip uninstall transparent-background
 ```
 
-## Licence
+## :page_facing_up: Licence
 
 See [LICENCE](https://github.com/plemeri/transparent-background/blob/main/LICENSE) for more details.
