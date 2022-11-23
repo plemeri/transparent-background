@@ -1,12 +1,22 @@
 # Transparent Background
 
-This is a background removing tool based on [InSPyReNet (ACCV 2022)](https://github.com/plemeri/InSPyReNet.git).
+<p align="center">
+    <img src=https://github.com/plemeri/transparent-background/blob/main/figures/logo.png >
+</p>
 
-<p>
+
+This is a background removing tool powered by [InSPyReNet (ACCV 2022)](https://github.com/plemeri/InSPyReNet.git).
+
+<p align="center">
+<a href="https://github.com/plemeri/transparent-background/blob/main/LICENSE"><img  src="https://img.shields.io/badge/license-MIT-blue"></a>
+<a href="https://pypi.org/project/transparent-background/"><image src="https://badge.fury.io/py/transparent-background.svg"></a>
+</p>
+
+<p align="center">
     <img src=https://github.com/plemeri/transparent-background/blob/main/figures/demo_aeroplane.gif >
 </p>
 
-## Install
+## :inbox_tray: Install
 
 ###
 ```
@@ -19,7 +29,7 @@ pip install . e
 
 ## Usage
 
-### Command Line
+### :computer: Command Line
 
 ```
 transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
@@ -42,7 +52,7 @@ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
     <img src=https://github.com/plemeri/transparent-background/blob/main/figures/demo_type.png >
 </p>
     
-### Python API
+### :crystal_ball: Python API
 * Usage Example
 ```python
 from PIL import Image
@@ -75,3 +85,14 @@ Image.fromarray(out).save('samples/aeroplane_overlay.png')
 out = remover.process(img, type='samples/sheep.jpg')
 Image.fromarray(out).save('samples/aeroplane_png.png')
 ```
+
+
+# :outbox_tray: Uninstall
+
+```
+pip uninstall transparent-background
+```
+
+## Licence
+
+See [LICENCE](https://github.com/plemeri/transparent-background/blob/main/LICENSE) for more details.
