@@ -1,7 +1,7 @@
 # Transparent Background
 
 <p align="center">
-    <img src=https://github.com/plemeri/transparent-background/blob/main/figures/logo.png width=200px>
+    <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/logo.png width=200px>
 </p>
 <p align="center">
     <a href="https://github.com/plemeri/transparent-background/blob/main/LICENSE"><img  src="https://img.shields.io/badge/license-MIT-blue"></a>
@@ -12,7 +12,7 @@ This is a background removing tool powered by [InSPyReNet (ACCV 2022)](https://g
 
 Image | Video
 :-:|:-:
-<img src=./figures/demo_aeroplane.gif > | <img src=./figures/demo_b5.gif >
+<img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_aeroplane.gif > | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_b5.gif >
 
 ## :inbox_tray: Install
 
@@ -49,7 +49,7 @@ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
     * Another image file (e.g., `backgroud.png`) will be used as a background, and the object will be overlapped on it.
 
 <p>
-    <img src=./figures/demo_type.png >
+    <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_type.png >
 </p>
     
 ### :crystal_ball: Python API
