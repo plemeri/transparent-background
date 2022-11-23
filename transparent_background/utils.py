@@ -154,6 +154,7 @@ class VideoLoader:
             self.index += 1
         
         else:
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             img = Image.fromarray(frame).convert('RGB')
             
         return img, name

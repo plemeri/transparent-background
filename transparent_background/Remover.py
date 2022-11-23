@@ -140,4 +140,4 @@ def console():
         if _format == 'Image':
             Image.fromarray(out).save(os.path.join(save_dir, name + '.png'))
         elif _format == 'Video' and writer is not None:
-            writer.write(out)
+            writer.write(cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
