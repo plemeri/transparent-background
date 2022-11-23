@@ -10,10 +10,9 @@
 
 This is a background removing tool powered by [InSPyReNet (ACCV 2022)](https://github.com/plemeri/InSPyReNet.git). You can easily remove background from the image or video or bunch of other stuffs when you can make the background transparent!
 
-
-<p align="center">
-    <img src=https://github.com/plemeri/transparent-background/blob/main/figures/demo_aeroplane.gif >
-</p>
+Image | Video
+:-:|:-:
+<img src=./figures/demo_aeroplane.gif > | <img src=./figures/demo_b5.gif >
 
 ## :inbox_tray: Install
 
@@ -50,7 +49,7 @@ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
     * Another image file (e.g., `backgroud.png`) will be used as a background, and the object will be overlapped on it.
 
 <p>
-    <img src=https://github.com/plemeri/transparent-background/blob/main/figures/demo_type.png >
+    <img src=./figures/demo_type.png >
 </p>
     
 ### :crystal_ball: Python API
