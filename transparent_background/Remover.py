@@ -108,7 +108,10 @@ def console():
         _format = get_format([args.source])
         
     else:
-        raise FileNotFoundError
+        raise FileNotFoundError('File or directory {} is invalid'.format(args.source))
+
+    if args.type == 'rgba' and _format == 'Video':
+        raise AttributeError('type rgba cannot be applied to video input')
         
     if args.dest is not None:
         save_dir = args.dest
