@@ -1,7 +1,9 @@
 # Transparent Background
 
 <p align="center">
-    <img src=https://github.com/plemeri/transparent-background/blob/main/figures/logo.png width=50px>
+    <img src=https://github.com/plemeri/transparent-background/blob/main/figures/logo.png width=200px>
+</p>
+<p align="center">
     <a href="https://github.com/plemeri/transparent-background/blob/main/LICENSE"><img  src="https://img.shields.io/badge/license-MIT-blue"></a>
     <a href="https://pypi.org/project/transparent-background/"><image src="https://badge.fury.io/py/transparent-background.svg"></a>
 </p>
