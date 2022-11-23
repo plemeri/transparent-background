@@ -123,7 +123,7 @@ def console():
 
     for img, name in samples:
         if _format == 'Video' and writer is None:
-            writer = cv2.VideoWriter(os.path.join(save_dir, name + '.mp4'), cv2.VideoWriter_fourcc(*'mp4v'), sample_list.fps, shape[::-1])
+            writer = cv2.VideoWriter(os.path.join(save_dir, name + '.mp4'), cv2.VideoWriter_fourcc(*'mp4v'), sample_list.fps, img.size)
             samples.total += int(sample_list.cap.get(cv2.CAP_PROP_FRAME_COUNT))
         if _format == 'Video' and img is None:
             if writer is not None:
