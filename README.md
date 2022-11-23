@@ -83,8 +83,8 @@ out = remover.process(img, type='overlay')
 Image.fromarray(out).save('samples/aeroplane_overlay.png')
 
 # use another image as a background
-out = remover.process(img, type='samples/sheep.jpg')
-Image.fromarray(out).save('samples/aeroplane_png.png')
+out = remover.process(img, type='samples/background.jpg')
+Image.fromarray(out).save('samples/aeroplane_newbg.png')
 ```
 
 
