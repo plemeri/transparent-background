@@ -28,6 +28,7 @@ class Remover:
             raise AssertionError('jit and enable pyramid blending cannot be used together')
         
         self.model = InSPyReNet_SwinB(depth=64, pretrained=False, base_size=base_size, threshold=threshold)
+        self.model.eval()
 
         checkpoint_dir = os.path.join(os.environ['HOME'], '.transparent-background')
         if os.path.isdir(checkpoint_dir) is False:
@@ -35,7 +36,7 @@ class Remover:
             
         download_and_unzip('latest.pth', URL, checkpoint_dir, False, md5=MD5)
 
-        self.model.load_state_dict(torch.load(os.path.join(checkpoint_dir, 'latest.pth'), map_location=torch.device('cpu')), strict=True)
+        self.model.load_state_dict(torch.load(os.path.join(checkpoint_dir, 'latest.pth'), map_location='cpu'), strict=True)
         
         self.use_gpu = False
         if torch.cuda.is_available():
@@ -64,7 +65,7 @@ class Remover:
             
         with torch.no_grad():
             pred = self.model(x)
-            
+
         pred = F.interpolate(pred, shape, mode='bilinear', align_corners=True)
         pred = pred.data.cpu()
         pred = pred.numpy().squeeze()   
