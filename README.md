@@ -14,8 +14,20 @@ Image | Video
 :-:|:-:
 <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_aeroplane.gif > | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_b5.gif >
 
-## :inbox_tray: Install
+## :inbox_tray: Installation
 
+### Dependencies
+
+package | version (>=)
+:-|:-
+pytorch | 1.7.1
+torchvision | 0.8.2
+opencv-python | 4.6.0.66
+timm | 0.6.11
+tqdm | 4.64.1
+kornia | 0.5.4
+
+### Install command
 ```
 # via pypi
 pip install transparent-background
@@ -48,9 +60,9 @@ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
     * `overlay` will cover the salient object with translucent green color, and highlight the edges.
     * Another image file (e.g., `backgroud.png`) will be used as a background, and the object will be overlapped on it.
 
-<p>
+    Examples of different TYPE argument choices
+    :-
     <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_type.png >
-</p>
     
 ### :crystal_ball: Python API
 * Usage Example
