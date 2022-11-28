@@ -6,7 +6,9 @@
 <p align="center">
     <a href="https://github.com/plemeri/transparent-background/blob/main/LICENSE"><img  src="https://img.shields.io/badge/license-MIT-blue"></a>
     <a href="https://pypi.org/project/transparent-background/"><image src="https://badge.fury.io/py/transparent-background.svg"></a>
+    <a href="https://pepy.tech/project/transparent-background"><image src="https://static.pepy.tech/personalized-badge/transparent-background?period=total&units=international_system&left_color=grey&right_color=orange&left_text=Downloads"></a>
 </p>
+
 
 This is a background removing tool powered by [InSPyReNet (ACCV 2022)](https://github.com/plemeri/InSPyReNet.git). You can easily remove background from the image or video or bunch of other stuffs when you can make the background transparent!
 
@@ -14,8 +16,20 @@ Image | Video
 :-:|:-:
 <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_aeroplane.gif > | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_b5.gif >
 
-## :inbox_tray: Install
+## :inbox_tray: Installation
 
+### Dependencies
+
+package | version (>=)
+:-|:-
+pytorch | 1.7.1
+torchvision | 0.8.2
+opencv-python | 4.6.0.66
+timm | 0.6.11
+tqdm | 4.64.1
+kornia | 0.5.4
+
+### Install command
 ```
 # via pypi
 pip install transparent-background
@@ -48,9 +62,9 @@ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
     * `overlay` will cover the salient object with translucent green color, and highlight the edges.
     * Another image file (e.g., `backgroud.png`) will be used as a background, and the object will be overlapped on it.
 
-<p>
-    <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_type.png >
-</p>
+    Examples of different TYPE argument choices|
+    :-|
+    <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_type.png >|
     
 ### :crystal_ball: Python API
 * Usage Example
