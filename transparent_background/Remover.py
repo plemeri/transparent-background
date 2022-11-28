@@ -1,6 +1,7 @@
 import os
 import sys
 import tqdm
+import gdown
 import torch
 import warnings
 
@@ -19,7 +20,7 @@ from transparent_background.utils import *
 
 warnings.filterwarnings("ignore")
 
-URL = "https://postechackr-my.sharepoint.com/:u:/g/personal/taehoon1018_postech_ac_kr/ET0R-yM8MfVHqI4g94AlL6AB-D6LxNajaWeDV4xbVQyh7w\?e\=l4JkZn\&download\=1"
+URL = "https://drive.google.com/file/d/13oBl5MTVcWER3YU4fSxW3ATlVfueFQPY/view?usp=share_link"
 MD5 = "3bb068bd44574f0a0c39a8da900b1cf9"
 
 class Remover:
@@ -30,11 +31,18 @@ class Remover:
         self.model = InSPyReNet_SwinB(depth=64, pretrained=False, base_size=base_size, threshold=threshold)
         self.model.eval()
 
-        checkpoint_dir = os.path.join(os.environ['HOME'], '.transparent-background')
+        checkpoint_dir = os.path.expanduser(os.path.join('~', '.transparent-background'))
         if os.path.isdir(checkpoint_dir) is False:
             os.makedirs(checkpoint_dir, exist_ok=True)
-            
-        download_and_unzip('latest.pth', URL, checkpoint_dir, False, md5=MD5)
+    
+        download = False
+        if not os.path.isfile(os.path.join(checkpoint_dir, 'latest.pth')):
+            download = True
+        elif MD5 != hashlib.md5(open(os.path.join(checkpoint_dir, 'latest.pth'), 'rb').read()).hexdigest():
+            download = True
+        
+        if download:
+            gdown.download(URL, os.path.join(checkpoint_dir, 'latest.pth'), fuzzy=True)
 
         self.model.load_state_dict(torch.load(os.path.join(checkpoint_dir, 'latest.pth'), map_location='cpu'), strict=True)
         
@@ -101,15 +109,16 @@ def console():
     remover = Remover(jit=args.jit)
 
     if os.path.isdir(args.source):
-        save_dir = os.path.join(os.environ['PWD'], args.source.split(os.sep)[-1])
+        save_dir = os.path.join(os.getcwd(), args.source.split(os.sep)[-1])
         _format = get_format(os.listdir(args.source))
 
     elif os.path.isfile(args.source):
-        save_dir = os.environ['PWD']
+        save_dir = os.getcwd()
         _format = get_format([args.source])
         
     else:
         raise FileNotFoundError('File or directory {} is invalid'.format(args.source))
+    
 
     if args.type == 'rgba' and _format == 'Video':
         raise AttributeError('type rgba cannot be applied to video input')
@@ -126,8 +135,10 @@ def console():
     writer = None
 
     for img, name in samples:
+        outname = '{}_{}'.format(name, args.type)
+        
         if _format == 'Video' and writer is None:
-            writer = cv2.VideoWriter(os.path.join(save_dir, name + '.mp4'), cv2.VideoWriter_fourcc(*'mp4v'), sample_list.fps, img.size)
+            writer = cv2.VideoWriter(os.path.join(save_dir, '{}.mp4'.format(outname)), cv2.VideoWriter_fourcc(*'mp4v'), sample_list.fps, img.size)
             samples.total += int(sample_list.cap.get(cv2.CAP_PROP_FRAME_COUNT))
         if _format == 'Video' and img is None:
             if writer is not None:
@@ -138,6 +149,6 @@ def console():
         out = remover.process(img, type=args.type)
                                         
         if _format == 'Image':
-            Image.fromarray(out).save(os.path.join(save_dir, name + '.png'))
+            Image.fromarray(out).save(os.path.join(save_dir, '{}.png'.format(outname)))
         elif _format == 'Video' and writer is not None:
             writer.write(cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
