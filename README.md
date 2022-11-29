@@ -47,6 +47,9 @@ pip install . e
 
 ```
 transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
+
+# for apple silicon mps backend
+PYTORCH_ENABLE_MPS_FALLBACK=1 transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
 ```
 * `--source [SOURCE]`: Specify your data in this argument.
     * Single image - `image.png`
@@ -113,7 +116,6 @@ while cap.isOpened():
 cap.release()
 writer.release()
 ```
-
 
 ## :outbox_tray: Uninstall
 
