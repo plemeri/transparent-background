@@ -176,6 +176,5 @@ def console():
         elif _format == 'Video' and writer is not None:
             writer.write(cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
         elif _format == 'Webcam':
-            # cv2.imshow('InSPyReNet', cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
-            vcam.send(cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
+            vcam.send(out)
             vcam.sleep_until_next_frame()

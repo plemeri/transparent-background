@@ -210,6 +210,7 @@ class WebcamLoader:
             raise StopIteration
         
         else:
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = Image.fromarray(frame).convert('RGB')
         
         del self.imgs[:-1]
