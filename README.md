@@ -43,7 +43,9 @@ $ sudo depmod -a
 $ sudo modprobe v4l2loopback devices=1
 ```
 
-### Install command
+Note: If you have any problem with installing [`v4l2loopback`](https://github.com/umlaeute/v4l2loopback), please visit their github repository.
+
+### Install `transperent-background`
 ```bash
 # via pypi
 $ pip install transparent-background
