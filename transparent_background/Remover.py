@@ -11,6 +11,7 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 
 from PIL import Image
+from packaging import version
 
 filepath = os.path.abspath(__file__)
 repopath = os.path.split(filepath)[0]
@@ -62,7 +63,7 @@ class Remover:
         self.backend = "cpu"
         if torch.cuda.is_available():
             self.backend = "cuda:0"
-        elif torch.backends.mps.is_available():
+        elif version.parse(torch.__version__) > version.parse("1.13") and torch.backends.mps.is_available():
             self.backend = "mps:0"
 
         self.model = self.model.to(self.backend)

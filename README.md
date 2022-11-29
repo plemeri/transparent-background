@@ -31,15 +31,16 @@ package | version (>=)
 `gdown`         | `4.5.4`
 `pyvirtualcam`  | `0.6.0`
 
+Note: If you have any problem with [`pyvirtualcam`](https://pypi.org/project/pyvirtualcam/), please visit their github repository or pypi homepage. Due to the backend workflow for Windows and macOS, we only support Linux for webcam input.
 ### Dependencies (webcam input)
 
 ```bash
-# Install v4l2loopback for webcam relay (Linux)
+# Install v4l2loopback for webcam relay
 $ git clone https://github.com/umlaeute/v4l2loopback.git && cd v4l2loopback
 $ make && sudo make install
 $ sudo depmod -a
 
-# Create virtual webcam (Linux)
+# Create virtual webcam
 $ sudo modprobe v4l2loopback devices=1
 ```
 
@@ -65,7 +66,7 @@ $ pip install . e
 ```bash
 $ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
 
-# for apple silicon mps backend
+# for apple silicon mps backend (requires torch >= 1.13)
 $ PYTORCH_ENABLE_MPS_FALLBACK=1 transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
 ```
 * `--source [SOURCE]`: Specify your data in this argument.
