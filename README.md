@@ -55,7 +55,7 @@ $ pip install transparent-background
 $ pip install git+https://github.com/plemeri/transparent-background.git
 
 # locally
-$ pip install . e
+$ pip install -e .
 ```
 
 
