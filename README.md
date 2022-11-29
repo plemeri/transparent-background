@@ -64,10 +64,10 @@ $ pip install . e
 ### :computer: Command Line
 
 ```bash
-$ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
+$ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE] --fast
 
 # for apple silicon mps backend (requires torch >= 1.13)
-$ PYTORCH_ENABLE_MPS_FALLBACK=1 transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
+$ PYTORCH_ENABLE_MPS_FALLBACK=1 transparent-background --source [SOURCE] --dest [DEST] --type [TYPE] --fast
 ```
 * `--source [SOURCE]`: Specify your data in this argument.
     * Single image - `image.png`
@@ -83,6 +83,7 @@ $ PYTORCH_ENABLE_MPS_FALLBACK=1 transparent-background --source [SOURCE] --dest 
     * `blur` will blur the background.
     * `overlay` will cover the salient object with translucent green color, and highlight the edges.
     * Another image file (e.g., `backgroud.png`) will be used as a background, and the object will be overlapped on it.
+* `--fast`: Fast mode. If specified, it will use low-resolution input and model trained with LR scale. May decrease performance but reduces inference time and gpu memory usage. 
 
     Examples of different TYPE argument choices|
     :-|
