@@ -28,6 +28,7 @@ opencv-python | 4.6.0.66
 timm | 0.6.11
 tqdm | 4.64.1
 kornia | 0.5.4
+gdown | 4.5.4
 
 ### Install command
 ```

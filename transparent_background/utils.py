@@ -121,7 +121,7 @@ class ImageLoader:
             raise StopIteration
         
         img = Image.open(self.images[self.index]).convert('RGB')
-        name = self.images[self.index].split(os.sep)[-1]
+        name = os.path.split(self.images[self.index])[-1]
         name = os.path.splitext(name)[0]
             
         self.index += 1
@@ -152,7 +152,7 @@ class VideoLoader:
             self.cap = cv2.VideoCapture(self.videos[self.index])
             self.fps = self.cap.get(cv2.CAP_PROP_FPS)
         ret, frame = self.cap.read()
-        name = self.videos[self.index].split(os.sep)[-1]
+        name = os.path.split(self.videos[self.index])[-1]
         name = os.path.splitext(name)[0]
         if ret is False:
             self.cap.release()
