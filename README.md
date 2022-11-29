@@ -14,7 +14,7 @@ This is a background removing tool powered by [InSPyReNet (ACCV 2022)](https://g
 
 Image | Video | Webcam
 :-:|:-:|:-:
-<img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_aeroplane.gif > | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_b5.gif > | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_webcam.gif >
+<img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_aeroplane.gif height=200px> | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_b5.gif height=200px> | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_webcam.gif height=200px>
 
 ## :inbox_tray: Installation
 
