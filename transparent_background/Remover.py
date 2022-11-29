@@ -155,7 +155,10 @@ def console():
     writer = None
 
     for img, name in samples:
-        outname = '{}_{}'.format(name, args.type)
+        if args.type.lower().endswith(('.jpg', '.jpeg', '.png')):
+            outname = '{}_{}'.format(name, os.path.splitext(os.path.split(args.type)[-1])[0])
+        else:
+            outname = '{}_{}'.format(name, args.type) 
         
         if _format == 'Video' and writer is None:
             writer = cv2.VideoWriter(os.path.join(save_dir, '{}.mp4'.format(outname)), cv2.VideoWriter_fourcc(*'mp4v'), sample_list.fps, img.size)
