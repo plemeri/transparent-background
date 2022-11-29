@@ -49,14 +49,18 @@ class InSPyReNet(nn.Module):
         
         self.forward = self.forward_inference
         
-    def cuda(self):
-        self.image_pyramid.cuda()
-        self.transition0.cuda()
-        self.transition1.cuda()
-        self.transition2.cuda()
-        super(InSPyReNet, self).cuda()
+    def to(self, device):
+        self.image_pyramid.to(device)
+        self.transition0.to(device)
+        self.transition1.to(device)
+        self.transition2.to(device)
+        super(InSPyReNet, self).to(device)
         return self
     
+    def cuda(self, idx=0):
+        self.to(device="cuda:{}".format(idx))
+        return self
+
     def eval(self):
         super(InSPyReNet, self).train(False)
         self.forward = self.forward_inference

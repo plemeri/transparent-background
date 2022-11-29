@@ -15,8 +15,15 @@ def parse_args():
     parser.add_argument('--source', '-s',     type=str,            help="Path to the source. Single image, video, directory of images, directory of videos is supported.")
     parser.add_argument('--dest', '-d',       type=str,            help="Path to destination. Results will be stored in current directory if not specified.", default=None)
     parser.add_argument('--type', '-t',       type=str,            help="Specify output type. If not specified, output results will make the background transparent. Please refer to the documentation for other types.", default='rgba')
-    parser.add_argument('--jit', '-j',        action='store_true', help="Use torchscript to reduce inference time.", default=False)
     return parser.parse_args()
+
+def get_backend():
+    if torch.cuda.is_available():
+        return "cuda:0"
+    elif torch.backends.mps.is_available():
+        return "mps:0"
+    else:
+        return "cpu"
 
 def get_format(source):
     img_count = len([i for i in source if i.lower().endswith(('.jpg', '.png', '.jpeg'))])

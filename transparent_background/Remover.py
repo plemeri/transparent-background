@@ -23,10 +23,7 @@ URL = "https://postechackr-my.sharepoint.com/:u:/g/personal/taehoon1018_postech_
 MD5 = "3bb068bd44574f0a0c39a8da900b1cf9"
 
 class Remover:
-    def __init__(self, base_size=[1024, 1024], threshold=None, enable_pb=False, jit=False):
-        if jit & enable_pb:
-            raise AssertionError('jit and enable pyramid blending cannot be used together')
-        
+    def __init__(self, base_size=[1024, 1024], threshold=None, enable_pb=False):
         self.model = InSPyReNet_SwinB(depth=64, pretrained=False, base_size=base_size, threshold=threshold)
         self.model.eval()
 
@@ -37,15 +34,14 @@ class Remover:
         download_and_unzip('latest.pth', URL, checkpoint_dir, False, md5=MD5)
 
         self.model.load_state_dict(torch.load(os.path.join(checkpoint_dir, 'latest.pth'), map_location='cpu'), strict=True)
-        
-        self.use_gpu = False
+
+        self.backend = "cpu"
         if torch.cuda.is_available():
-            self.model = self.model.cuda()
-            self.use_gpu = True
-            
-        if jit:
-            self.model = torch.jit.trace(self.model, torch.rand(1, 3, *base_size).cuda(), strict=False)
-            torch.jit.save(self.model, os.path.join(checkpoint_dir, 'jit.pt'))
+            self.backend = "cuda:0"
+        elif torch.backends.mps.is_available():
+            self.backend = "mps:0"
+
+        self.model = self.model.to(self.backend)
             
         self.transform = transforms.Compose([dynamic_resize(L=1280),
                                             tonumpy(),
@@ -59,9 +55,7 @@ class Remover:
         shape = img.size[::-1]            
         x = self.transform(img)
         x = x.unsqueeze(0)
-        
-        if self.use_gpu:
-            x = x.cuda()
+        x = x.to(self.backend)
             
         with torch.no_grad():
             pred = self.model(x)
@@ -74,20 +68,25 @@ class Remover:
         
         if type == 'map':
             img = (np.stack([pred] * 3, axis=-1) * 255).astype(np.uint8)
+
         elif type == 'rgba':
             r, g, b = cv2.split(img)
             pred = (pred * 255).astype(np.uint8)
             img = cv2.merge([r, g, b, pred])
+
         elif type == 'green':
             bg = np.stack([np.ones_like(pred)] * 3, axis=-1) * [120, 255, 155]
             img = img * pred[..., np.newaxis] + bg * (1 - pred[..., np.newaxis])
+
         elif type == 'blur':
             img = img * pred[..., np.newaxis] + cv2.GaussianBlur(img, (0, 0), 15) * (1 - pred[..., np.newaxis])
+
         elif type == 'overlay':
             bg = (np.stack([np.ones_like(pred)] * 3, axis=-1) * [120, 255, 155] + img) // 2
             img = bg * pred[..., np.newaxis] + img * (1 - pred[..., np.newaxis])
             border = cv2.Canny(((pred > .5) * 255).astype(np.uint8), 50, 100)
             img[border != 0] = [120, 255, 155]
+
         elif type.lower().endswith(('.jpg', '.jpeg', '.png')):
             if self.background is None:
                 self.background = cv2.cvtColor(cv2.imread(type), cv2.COLOR_BGR2RGB)
@@ -98,7 +97,7 @@ class Remover:
 
 def console():
     args = parse_args()
-    remover = Remover(jit=args.jit)
+    remover = Remover()
 
     if os.path.isdir(args.source):
         save_dir = os.path.join(os.environ['PWD'], args.source.split(os.sep)[-1])

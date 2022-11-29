@@ -19,8 +19,12 @@ class ImagePyramid:
         k = torch.tensor(k).float()
         self.kernel = k.repeat(channels, 1, 1, 1)
         
-    def cuda(self):
-        self.kernel = self.kernel.cuda()
+    def to(self, device):
+        self.kernel = self.kernel.to(device)
+        return self
+        
+    def cuda(self, idx=0):
+        self.to(device="cuda:{}".format(idx))
         return self
 
     def expand(self, x):
@@ -57,8 +61,12 @@ class Transition:
     def __init__(self, k=3):
         self.kernel = torch.tensor(cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (k, k))).float()
         
-    def cuda(self):
-        self.kernel = self.kernel.cuda()
+    def to(self, device):
+        self.kernel = self.kernel.to(device)
+        return self
+        
+    def cuda(self, idx=0):
+        self.to(device="cuda:{}".format(idx))
         return self
         
     def __call__(self, x):
