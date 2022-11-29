@@ -4,6 +4,7 @@ import tqdm
 import gdown
 import torch
 import warnings
+import pyvirtualcam
 
 import numpy as np
 import torch.nn.functional as F
@@ -20,12 +21,25 @@ from transparent_background.utils import *
 
 warnings.filterwarnings("ignore")
 
-URL = "https://drive.google.com/file/d/13oBl5MTVcWER3YU4fSxW3ATlVfueFQPY/view?usp=share_link"
-MD5 = "3bb068bd44574f0a0c39a8da900b1cf9"
+CONFIG = {
+'base': {'url': "https://drive.google.com/file/d/13oBl5MTVcWER3YU4fSxW3ATlVfueFQPY/view?usp=share_link",
+         'md5': "3bb068bd44574f0a0c39a8da900b1cf9",
+         'base_size': [1024, 1024],
+         'threshold': None,
+         'ckpt_name': "ckpt_base.pth",
+         'resize': dynamic_resize(L=1280)},
+'fast': {'url': "https://drive.google.com/file/d/1iRX-0MVbUjvAVns5MtVdng6CQlGOIo3m/view?usp=share_link",
+         'md5': "735a2fe8519bc12290f86bf7b8b395ff",
+         'base_size': [384, 384],
+         'threshold': 512,
+         'ckpt_name': "ckpt_fast.pth",
+         'resize': static_resize(size=[384, 384])}
+}
 
 class Remover:
-    def __init__(self, base_size=[1024, 1024], threshold=None, enable_pb=False):
-        self.model = InSPyReNet_SwinB(depth=64, pretrained=False, base_size=base_size, threshold=threshold)
+    def __init__(self, fast=False):
+        self.meta = CONFIG['fast' if fast else 'base']
+        self.model = InSPyReNet_SwinB(depth=64, pretrained=False, **self.meta)
         self.model.eval()
 
         checkpoint_dir = os.path.expanduser(os.path.join('~', '.transparent-background'))
@@ -33,15 +47,17 @@ class Remover:
             os.makedirs(checkpoint_dir, exist_ok=True)
     
         download = False
-        if not os.path.isfile(os.path.join(checkpoint_dir, 'latest.pth')):
+        ckpt_name = self.meta['ckpt_name']
+        
+        if not os.path.isfile(os.path.join(checkpoint_dir, ckpt_name)):
             download = True
-        elif MD5 != hashlib.md5(open(os.path.join(checkpoint_dir, 'latest.pth'), 'rb').read()).hexdigest():
+        elif self.meta['md5'] != hashlib.md5(open(os.path.join(checkpoint_dir, ckpt_name), 'rb').read()).hexdigest():
             download = True
         
         if download:
-            gdown.download(URL, os.path.join(checkpoint_dir, 'latest.pth'), fuzzy=True)
+            gdown.download(self.meta['url'], os.path.join(checkpoint_dir, ckpt_name), fuzzy=True)
 
-        self.model.load_state_dict(torch.load(os.path.join(checkpoint_dir, 'latest.pth'), map_location='cpu'), strict=True)
+        self.model.load_state_dict(torch.load(os.path.join(checkpoint_dir, ckpt_name), map_location='cpu'), strict=True)
 
         self.backend = "cpu"
         if torch.cuda.is_available():
@@ -50,8 +66,8 @@ class Remover:
             self.backend = "mps:0"
 
         self.model = self.model.to(self.backend)
-            
-        self.transform = transforms.Compose([dynamic_resize(L=1280),
+    
+        self.transform = transforms.Compose([self.meta['resize'],
                                             tonumpy(),
                                             normalize(mean=[0.485, 0.456, 0.406], 
                                                         std=[0.229, 0.224, 0.225]),
@@ -105,9 +121,14 @@ class Remover:
 
 def console():
     args = parse_args()
-    remover = Remover()
+    remover = Remover(fast=args.fast)
 
-    if os.path.isdir(args.source):
+    if args.source.isnumeric() is True:
+        save_dir = None
+        _format = 'Webcam'
+        vcam = pyvirtualcam.Camera(width=640, height=480, fps=30)
+
+    elif os.path.isdir(args.source):
         save_dir = os.path.join(os.getcwd(), args.source.split(os.sep)[-1])
         _format = get_format(os.listdir(args.source))
 
@@ -118,7 +139,6 @@ def console():
     else:
         raise FileNotFoundError('File or directory {} is invalid'.format(args.source))
     
-
     if args.type == 'rgba' and _format == 'Video':
         raise AttributeError('type rgba cannot be applied to video input')
         
@@ -151,3 +171,7 @@ def console():
             Image.fromarray(out).save(os.path.join(save_dir, '{}.png'.format(outname)))
         elif _format == 'Video' and writer is not None:
             writer.write(cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
+        elif _format == 'Webcam':
+            # cv2.imshow('InSPyReNet', cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
+            vcam.send(cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
+            vcam.sleep_until_next_frame()

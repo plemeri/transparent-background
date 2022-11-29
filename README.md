@@ -12,54 +12,69 @@
 
 This is a background removing tool powered by [InSPyReNet (ACCV 2022)](https://github.com/plemeri/InSPyReNet.git). You can easily remove background from the image or video or bunch of other stuffs when you can make the background transparent!
 
-Image | Video
-:-:|:-:
-<img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_aeroplane.gif > | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_b5.gif >
+Image | Video | Webcam
+:-:|:-:|:-:
+<img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_aeroplane.gif > | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_b5.gif > | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_webcam.gif >
 
 ## :inbox_tray: Installation
 
-### Dependencies
+### Dependencies (python packages)
 
 package | version (>=)
 :-|:-
-pytorch | 1.7.1
-torchvision | 0.8.2
-opencv-python | 4.6.0.66
-timm | 0.6.11
-tqdm | 4.64.1
-kornia | 0.5.4
-gdown | 4.5.4
+`pytorch`       | `1.7.1`
+`torchvision`   | `0.8.2`
+`opencv-python` | `4.6.0.66`
+`timm`          | `0.6.11`
+`tqdm`          | `4.64.1`
+`kornia`        | `0.5.4`
+`gdown`         | `4.5.4`
+`pyvirtualcam`  | `0.6.0`
+
+### Dependencies (webcam input)
+
+```bash
+# Install v4l2loopback for webcam relay (Linux)
+$ git clone https://github.com/umlaeute/v4l2loopback.git && cd v4l2loopback
+$ make && sudo make install
+$ sudo depmod -a
+
+# Create virtual webcam (Linux)
+$ sudo modprobe v4l2loopback devices=1
+```
 
 ### Install command
-```
+```bash
 # via pypi
-pip install transparent-background
+$ pip install transparent-background
 
 # via github
-pip install git+https://github.com/plemeri/transparent-background.git
+$ pip install git+https://github.com/plemeri/transparent-background.git
 
 # locally
-pip install . e
+$ pip install . e
 ```
+
 
 ## :pencil2: Usage
 
 ### :computer: Command Line
 
-```
-transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
+```bash
+$ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
 
 # for apple silicon mps backend
-PYTORCH_ENABLE_MPS_FALLBACK=1 transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
+$ PYTORCH_ENABLE_MPS_FALLBACK=1 transparent-background --source [SOURCE] --dest [DEST] --type [TYPE]
 ```
 * `--source [SOURCE]`: Specify your data in this argument.
     * Single image - `image.png`
     * Folder containing images - `path/to/img/folder`
     * Single video - `video.mp4`
     * Folder containing videos - `path/to/vid/folder`
+    * Integer for webcam address - `0` (e.g., if your webcam is at `/dev/video0`.)
 * `--dest [DEST]` (optional): Specify your destination folder. If not specified, it will be saved in current directory.
 * `--type [TYPE]`: Choose between `rgba`, `map` `green`, `blur`, `overlay`, and another image file.
-    * `rgba` will generate RGBA output regarding saliency score as an alpha map. Note that this will not work for video input. 
+    * `rgba` will generate RGBA output regarding saliency score as an alpha map. Note that this will not work for video and webcam input. 
     * `map` will output saliency map only. 
     * `green` will change the background with green screen. 
     * `blur` will blur the background.

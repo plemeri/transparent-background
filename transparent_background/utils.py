@@ -12,9 +12,10 @@ from threading import Thread
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--source', '-s',     type=str,            help="Path to the source. Single image, video, directory of images, directory of videos is supported.")
-    parser.add_argument('--dest', '-d',       type=str,            help="Path to destination. Results will be stored in current directory if not specified.", default=None)
-    parser.add_argument('--type', '-t',       type=str,            help="Specify output type. If not specified, output results will make the background transparent. Please refer to the documentation for other types.", default='rgba')
+    parser.add_argument('--source', '-s', type=str, help="Path to the source. Single image, video, directory of images, directory of videos is supported.")
+    parser.add_argument('--dest', '-d',   type=str, help="Path to destination. Results will be stored in current directory if not specified.", default=None)
+    parser.add_argument('--type', '-t',   type=str, help="Specify output type. If not specified, output results will make the background transparent. Please refer to the documentation for other types.", default='rgba')
+    parser.add_argument('--fast', '-f',             help="Speed up inference speed, but decreases output quality.", action='store_true')
     return parser.parse_args()
 
 def get_backend():
@@ -72,6 +73,13 @@ class dynamic_resize:
     
         return img.resize(size, Image.BILINEAR)
     
+class static_resize:
+    def __init__(self, size=[1024, 1024]): 
+        self.size = size
+                    
+    def __call__(self, img):
+        return img.resize(self.size, Image.BILINEAR)    
+
 class normalize:
     def __init__(self, mean=None, std=None, div=255):
         self.mean = mean if mean is not None else 0.0
@@ -168,3 +176,44 @@ class VideoLoader:
     
     def __len__(self):
         return self.size
+    
+class WebcamLoader:
+    def __init__(self, ID):
+        self.ID = int(ID)
+        self.cap = cv2.VideoCapture(self.ID)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        self.imgs = []
+        self.imgs.append(self.cap.read()[1])
+        self.thread = Thread(target=self.update, daemon=True)
+        self.thread.start()
+        
+    def update(self):
+        while self.cap.isOpened():
+            ret, frame = self.cap.read()
+            if ret is True:
+                self.imgs.append(frame)
+            else:
+                break
+        
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if len(self.imgs) > 0:
+            frame = self.imgs[-1]
+        else:
+            frame = Image.fromarray(np.zeros((480, 640, 3)).astype(np.uint8))
+            
+        if self.thread.is_alive() is False or cv2.waitKey(1) == ord('q'):
+            cv2.destroyAllWindows()
+            raise StopIteration
+        
+        else:
+            frame = Image.fromarray(frame).convert('RGB')
+        
+        del self.imgs[:-1]
+        return frame, None
+
+    def __len__(self):
+        return 0
