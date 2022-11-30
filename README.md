@@ -34,6 +34,10 @@ package | version (>=)
 Note: If you have any problem with [`pyvirtualcam`](https://pypi.org/project/pyvirtualcam/), please visit their github repository or pypi homepage. Due to the backend workflow for Windows and macOS, we only support Linux for webcam input.
 ### Dependencies (webcam input)
 
+We basically follow the virtual camera settings from [`pyvirtualcam`](https://pypi.org/project/pyvirtualcam/). If you do not choose to install virtual camera, it will visualize real-time output with `cv2.imshow`.
+
+#### A. Linux (v4l2loopback)
+
 ```bash
 # Install v4l2loopback for webcam relay
 $ git clone https://github.com/umlaeute/v4l2loopback.git && cd v4l2loopback
@@ -46,6 +50,18 @@ $ sudo modprobe v4l2loopback devices=1
 
 Note: If you have any problem with installing [`v4l2loopback`](https://github.com/umlaeute/v4l2loopback), please visit their github repository.
 
+#### B. Windows (OBS)
+
+Install OBS virtual camera from [install OBS](https://obsproject.com/).
+
+#### C. macOS (OBS) [not stable]
+
+Follow the steps below.
+* [Install OBS](https://obsproject.com/).
+* Start OBS.
+* Click "Start Virtual Camera" (bottom right), then "Stop Virtual Camera".
+* Close OBS.
+
 ### Install `transperent-background`
 ```bash
 # via pypi
@@ -57,7 +73,6 @@ $ pip install git+https://github.com/plemeri/transparent-background.git
 # locally
 $ pip install -e .
 ```
-
 
 ## :pencil2: Usage
 
