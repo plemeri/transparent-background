@@ -127,7 +127,12 @@ def console():
     if args.source.isnumeric() is True:
         save_dir = None
         _format = 'Webcam'
-        vcam = pyvirtualcam.Camera(width=640, height=480, fps=30)
+        try:
+            vcam = pyvirtualcam.Camera(width=640, height=480, fps=30)
+            print(f'Using virtual camera: {vcam.device}\n')
+        except:
+            vcam = None
+            print('virtual camera not available, visualzing instead.')
 
     elif os.path.isdir(args.source):
         save_dir = os.path.join(os.getcwd(), args.source.split(os.sep)[-1])
@@ -176,5 +181,8 @@ def console():
         elif _format == 'Video' and writer is not None:
             writer.write(cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
         elif _format == 'Webcam':
-            vcam.send(out)
-            vcam.sleep_until_next_frame()
+            if vcam is not None:
+                vcam.send(out)
+                vcam.sleep_until_next_frame()
+            else:
+                cv2.imshow('transparent-background', out)
