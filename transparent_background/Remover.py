@@ -185,4 +185,4 @@ def console():
                 vcam.send(out)
                 vcam.sleep_until_next_frame()
             else:
-                cv2.imshow('transparent-background', out)
+                cv2.imshow('transparent-background', cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
