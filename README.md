@@ -115,7 +115,7 @@ from transparent_background import Remover
 remover = Remover()
 
 # Usage for image
-img = Image.open('samples/aeroplane.jpg') # read image
+img = Image.open('samples/aeroplane.jpg').convert('RGB') # read image
 
 out = remover.process(img) # default setting - transparent background
 out = remover.process(img, type='rgba') # same as above
