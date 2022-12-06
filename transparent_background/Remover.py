@@ -24,13 +24,13 @@ warnings.filterwarnings("ignore")
 
 CONFIG = {
 'base': {'url': "https://drive.google.com/file/d/13oBl5MTVcWER3YU4fSxW3ATlVfueFQPY/view?usp=share_link",
-         'md5': "3bb068bd44574f0a0c39a8da900b1cf9",
+         'md5': "bf17ee133697bcb91c72437f55e5c659",
          'base_size': [1024, 1024],
          'threshold': None,
          'ckpt_name': "ckpt_base.pth",
          'resize': dynamic_resize(L=1280)},
 'fast': {'url': "https://drive.google.com/file/d/1iRX-0MVbUjvAVns5MtVdng6CQlGOIo3m/view?usp=share_link",
-         'md5': "735a2fe8519bc12290f86bf7b8b395ff",
+         'md5': "12f15617a8547293297e93f871b53872",
          'base_size': [384, 384],
          'threshold': 512,
          'ckpt_name': "ckpt_fast.pth",
