@@ -5,6 +5,7 @@ import gdown
 import torch
 import warnings
 import pyvirtualcam
+import onnxruntime
 
 import numpy as np
 import torch.nn.functional as F
@@ -24,32 +25,76 @@ warnings.filterwarnings("ignore")
 
 CONFIG = {
 'base': {'url': "https://drive.google.com/file/d/13oBl5MTVcWER3YU4fSxW3ATlVfueFQPY/view?usp=share_link",
-         'md5': "3bb068bd44574f0a0c39a8da900b1cf9",
+         'md5': "576ebd735e78bd9d864bd0392c74d2eb",
          'base_size': [1024, 1024],
          'threshold': None,
          'ckpt_name': "ckpt_base.pth",
-         'resize': dynamic_resize(L=1280)},
+         'tfs': [dynamic_resize(L=1280),
+                 tonumpy(),
+                 normalize(mean=[0.485, 0.456, 0.406], 
+                           std=[0.229, 0.224, 0.225]),
+                 transpose(),
+                 totensor()]
+         },
+'base_onnx': {'url': "https://drive.google.com/file/d/1k3JfBndJ4rgU3HRCq98efRVj1CgczlSQ/view?usp=share_link",
+              'md5': "d3508c6fbcb8968710ca80b710da179f",
+              'base_size': [1024, 1024],
+              'threshold': None,
+              'ckpt_name': "ckpt_base.onnx",
+              'tfs': [static_resize((1024, 1024)),
+                      tonumpy(),
+                      normalize(mean=[0.485, 0.456, 0.406], 
+                                std=[0.229, 0.224, 0.225]),
+                      transpose()]
+         },
 'fast': {'url': "https://drive.google.com/file/d/1iRX-0MVbUjvAVns5MtVdng6CQlGOIo3m/view?usp=share_link",
-         'md5': "735a2fe8519bc12290f86bf7b8b395ff",
+         'md5': "12f15617a8547293297e93f871b53872",
          'base_size': [384, 384],
-         'threshold': 512,
+         'threshold': None,
          'ckpt_name': "ckpt_fast.pth",
-         'resize': static_resize(size=[384, 384])}
+         'tfs': [static_resize(size=[384, 384]),
+                 tonumpy(),
+                 normalize(mean=[0.485, 0.456, 0.406], 
+                           std=[0.229, 0.224, 0.225]),
+                 transpose(),
+                 totensor()]
+         },
+'fast_onnx': {'url': "https://drive.google.com/file/d/13oBl5MTVcWER3YU4fSxW3ATlVfueFQPY/view?usp=share_link",
+              'md5': "1bbed865c233daff825e387cec039caa",
+              'base_size': [384, 384],
+              'threshold': None,
+              'ckpt_name': "ckpt_fast.onnx",
+              'tfs': [static_resize((384, 384)),
+                      tonumpy(),
+                      normalize(mean=[0.485, 0.456, 0.406], 
+                                std=[0.229, 0.224, 0.225]),
+                      transpose()]
+         },
 }
 
-class Remover:
-    def __init__(self, fast=False):
-        self.meta = CONFIG['fast' if fast else 'base']
-        self.model = InSPyReNet_SwinB(depth=64, pretrained=False, **self.meta)
-        self.model.eval()
+class ONNXWrapper:
+    def __init__(self):
+        self.session = None
+        
+    def load(self, ckpt):
+        self.session = onnxruntime.InferenceSession(ckpt)
+        
+    def __call__(self, img):
+        return self.session.run(None, {'img': img})[0]
 
+class Remover:
+    def __init__(self, fast=False, onnx=False):
+        key = 'fast' if fast else 'base'
+        key = key + '_onnx' if onnx else key
+        
+        self.meta = CONFIG[key]
+        
         checkpoint_dir = os.path.expanduser(os.path.join('~', '.transparent-background'))
         if os.path.isdir(checkpoint_dir) is False:
             os.makedirs(checkpoint_dir, exist_ok=True)
     
         download = False
-        ckpt_name = self.meta['ckpt_name']
-        
+        ckpt_name = self.meta['ckpt_name']        
         if not os.path.isfile(os.path.join(checkpoint_dir, ckpt_name)):
             download = True
         elif self.meta['md5'] != hashlib.md5(open(os.path.join(checkpoint_dir, ckpt_name), 'rb').read()).hexdigest():
@@ -57,61 +102,65 @@ class Remover:
         
         if download:
             gdown.download(self.meta['url'], os.path.join(checkpoint_dir, ckpt_name), fuzzy=True)
+            
+        if onnx:
+            self.model = ONNXWrapper()
+            self.backend = 'onnx'            
+            self.model.load(os.path.join(checkpoint_dir, ckpt_name))            
+        else:
+            self.model = InSPyReNet_SwinB(depth=64, pretrained=False, **self.meta)
+            self.model.eval()
+            
+            self.backend = "cpu"
+            if torch.cuda.is_available():
+                self.backend = "cuda:0"
+            elif version.parse(torch.__version__) > version.parse("1.13") and torch.backends.mps.is_available():
+                self.backend = "mps:0"
 
-        self.model.load_state_dict(torch.load(os.path.join(checkpoint_dir, ckpt_name), map_location='cpu'), strict=True)
+            self.model.load_state_dict(torch.load(os.path.join(checkpoint_dir, ckpt_name), map_location='cpu'), strict=True)
+            self.model = self.model.to(self.backend)
 
-        self.backend = "cpu"
-        if torch.cuda.is_available():
-            self.backend = "cuda:0"
-        elif version.parse(torch.__version__) > version.parse("1.13") and torch.backends.mps.is_available():
-            self.backend = "mps:0"
-
-        self.model = self.model.to(self.backend)
-    
-        self.transform = transforms.Compose([self.meta['resize'],
-                                            tonumpy(),
-                                            normalize(mean=[0.485, 0.456, 0.406], 
-                                                        std=[0.229, 0.224, 0.225]),
-                                            totensor()])
-
+        self.transform = transforms.Compose(self.meta['tfs'])        
         self.background = None
     
     def process(self, img, type='rgba'):
         shape = img.size[::-1]            
         x = self.transform(img)
-        x = x.unsqueeze(0)
-        x = x.to(self.backend)
+        
+        if self.backend != 'onnx':
+            x = x.unsqueeze(0)
+            x = x.to(self.backend)
+        else:
+            x = x[np.newaxis]
             
         with torch.no_grad():
             pred = self.model(x)
 
-        pred = F.interpolate(pred, shape, mode='bilinear', align_corners=True)
-        pred = pred.data.cpu()
-        pred = pred.numpy().squeeze()   
+        if self.backend != 'onnx':
+            pred = F.interpolate(pred, shape, mode='bilinear', align_corners=True)
+            pred = pred.data.cpu()
+            pred = pred.numpy().squeeze()   
         
-        img = np.array(img)
+            img = np.array(img)
+        else:
+            pred = cv2.resize(pred.squeeze(), shape[::-1])
         
         if type == 'map':
             img = (np.stack([pred] * 3, axis=-1) * 255).astype(np.uint8)
-
         elif type == 'rgba':
             r, g, b = cv2.split(img)
             pred = (pred * 255).astype(np.uint8)
             img = cv2.merge([r, g, b, pred])
-
         elif type == 'green':
             bg = np.stack([np.ones_like(pred)] * 3, axis=-1) * [120, 255, 155]
             img = img * pred[..., np.newaxis] + bg * (1 - pred[..., np.newaxis])
-
         elif type == 'blur':
             img = img * pred[..., np.newaxis] + cv2.GaussianBlur(img, (0, 0), 15) * (1 - pred[..., np.newaxis])
-
         elif type == 'overlay':
             bg = (np.stack([np.ones_like(pred)] * 3, axis=-1) * [120, 255, 155] + img) // 2
             img = bg * pred[..., np.newaxis] + img * (1 - pred[..., np.newaxis])
             border = cv2.Canny(((pred > .5) * 255).astype(np.uint8), 50, 100)
             img[border != 0] = [120, 255, 155]
-
         elif type.lower().endswith(('.jpg', '.jpeg', '.png')):
             if self.background is None:
                 self.background = cv2.cvtColor(cv2.imread(type), cv2.COLOR_BGR2RGB)
@@ -122,7 +171,7 @@ class Remover:
 
 def console():
     args = parse_args()
-    remover = Remover(fast=args.fast)
+    remover = Remover(fast=args.fast, onnx=args.onnx)
 
     if args.source.isnumeric() is True:
         save_dir = None

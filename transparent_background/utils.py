@@ -15,7 +15,8 @@ def parse_args():
     parser.add_argument('--source', '-s', type=str, help="Path to the source. Single image, video, directory of images, directory of videos is supported.")
     parser.add_argument('--dest', '-d',   type=str, help="Path to destination. Results will be stored in current directory if not specified.", default=None)
     parser.add_argument('--type', '-t',   type=str, help="Specify output type. If not specified, output results will make the background transparent. Please refer to the documentation for other types.", default='rgba')
-    parser.add_argument('--fast', '-f',             help="Speed up inference speed, but decreases output quality.", action='store_true')
+    parser.add_argument('--fast', '-f',             help="Speed up inference speed by using small model, but decreases output quality.",  action='store_true')
+    parser.add_argument('--onnx', '-o',             help="Speed up inference speed by using onnx runtime, but decreases output quality.", action='store_true')
     return parser.parse_args()
 
 def get_backend():
@@ -101,12 +102,19 @@ class tonumpy:
         img = np.array(img, dtype=np.float32)
         return img
     
-class totensor:
+class transpose:
     def __init__(self):
         pass
 
     def __call__(self, img):
         img = img.transpose((2, 0, 1))
+        return img
+
+class totensor:
+    def __init__(self):
+        pass
+
+    def __call__(self, img):
         img = torch.from_numpy(img).float()
         
         return img
