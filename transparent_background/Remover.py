@@ -48,7 +48,7 @@ CONFIG = {
                       transpose()]
          },
 'fast': {'url': "https://drive.google.com/file/d/1iRX-0MVbUjvAVns5MtVdng6CQlGOIo3m/view?usp=share_link",
-         'md5': "12f15617a8547293297e93f871b53872",
+         'md5': "9efdbfbcc49b79ef0f7891c83d2fd52f",
          'base_size': [384, 384],
          'threshold': None,
          'ckpt_name': "ckpt_fast.pth",
@@ -59,17 +59,17 @@ CONFIG = {
                  transpose(),
                  totensor()]
          },
-'fast_onnx': {'url': "https://drive.google.com/file/d/13oBl5MTVcWER3YU4fSxW3ATlVfueFQPY/view?usp=share_link",
-              'md5': "1bbed865c233daff825e387cec039caa",
-              'base_size': [384, 384],
-              'threshold': None,
-              'ckpt_name': "ckpt_fast.onnx",
-              'tfs': [static_resize((384, 384)),
-                      tonumpy(),
-                      normalize(mean=[0.485, 0.456, 0.406], 
-                                std=[0.229, 0.224, 0.225]),
-                      transpose()]
-         },
+# 'fast_onnx': {'url': "https://drive.google.com/file/d/13oBl5MTVcWER3YU4fSxW3ATlVfueFQPY/view?usp=share_link",
+#               'md5': "1bbed865c233daff825e387cec039caa",
+#               'base_size': [384, 384],
+#               'threshold': None,
+#               'ckpt_name': "ckpt_fast.onnx",
+#               'tfs': [static_resize((384, 384)),
+#                       tonumpy(),
+#                       normalize(mean=[0.485, 0.456, 0.406], 
+#                                 std=[0.229, 0.224, 0.225]),
+#                       transpose()]
+#          },
 }
 
 class ONNXWrapper:
@@ -140,10 +140,10 @@ class Remover:
             pred = F.interpolate(pred, shape, mode='bilinear', align_corners=True)
             pred = pred.data.cpu()
             pred = pred.numpy().squeeze()   
-        
-            img = np.array(img)
         else:
             pred = cv2.resize(pred.squeeze(), shape[::-1])
+            
+        img = np.array(img)
         
         if type == 'map':
             img = (np.stack([pred] * 3, axis=-1) * 255).astype(np.uint8)
