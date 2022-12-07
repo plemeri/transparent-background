@@ -30,7 +30,7 @@ CONFIG = {
          'ckpt_name': "ckpt_base.pth",
          'resize': dynamic_resize(L=1280)},
 'fast': {'url': "https://drive.google.com/file/d/1iRX-0MVbUjvAVns5MtVdng6CQlGOIo3m/view?usp=share_link",
-         'md5': "12f15617a8547293297e93f871b53872",
+         'md5': "9efdbfbcc49b79ef0f7891c83d2fd52f",
          'base_size': [384, 384],
          'threshold': 512,
          'ckpt_name': "ckpt_fast.pth",
