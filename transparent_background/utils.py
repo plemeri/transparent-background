@@ -12,10 +12,12 @@ from threading import Thread
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--source', '-s', type=str, help="Path to the source. Single image, video, directory of images, directory of videos is supported.")
-    parser.add_argument('--dest', '-d',   type=str, help="Path to destination. Results will be stored in current directory if not specified.", default=None)
-    parser.add_argument('--type', '-t',   type=str, help="Specify output type. If not specified, output results will make the background transparent. Please refer to the documentation for other types.", default='rgba')
-    parser.add_argument('--fast', '-f',             help="Speed up inference speed, but decreases output quality.", action='store_true')
+    parser.add_argument('--source', '-s', type=str,                 help="Path to the source. Single image, video, directory of images, directory of videos is supported.")
+    parser.add_argument('--dest',   '-d', type=str, default=None,   help="Path to destination. Results will be stored in current directory if not specified.")
+    parser.add_argument('--type',   '-t', type=str, default='rgba', help="Specify output type. If not specified, output results will make the background transparent. Please refer to the documentation for other types.")
+    parser.add_argument('--fast',   '-f', action='store_true',      help="Speed up inference speed by using small scale, but decreases output quality.")
+    parser.add_argument('--jit',    '-j', action='store_true',      help="Speed up inference speed by using torchscript, but decreases output quality.")
+    parser.add_argument('--device', '-D', type=str, default=None,   help="Designate device. If not specified, it will find available device.")
     return parser.parse_args()
 
 def get_backend():
