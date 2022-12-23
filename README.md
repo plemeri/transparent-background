@@ -79,10 +79,8 @@ $ pip install -e .
 ### :computer: Command Line
 
 ```bash
-$ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE] (--fast) (--jit)
-
-# for apple silicon mps backend (requires torch >= 1.13)
-$ PYTORCH_ENABLE_MPS_FALLBACK=1 transparent-background --source [SOURCE] --dest [DEST] --type [TYPE] --ckpt [CKPT] (--fast) (--jit)
+# for apple silicon mps backend, use "PYTORCH_ENABLE_MPS_FALLBACK=1" before the command (requires torch >= 1.13)
+$ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE] --ckpt [CKPT] (--fast) (--jit)
 ```
 * `--source [SOURCE]`: Specify your data in this argument.
     * Single image - `image.png`
@@ -110,7 +108,9 @@ import cv2
 from PIL import Image
 from transparent_background import Remover
 
-remover = Remover()
+# Load model
+remover = Remover() # default setting
+remover = Remover(fast=True, jit=True, device='cuda:0', ckpt='~/latest.pth') # custom setting
 
 # Usage for image
 img = Image.open('samples/aeroplane.jpg').convert('RGB') # read image

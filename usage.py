@@ -3,10 +3,12 @@ import cv2
 from PIL import Image
 from transparent_background import Remover
 
-remover = Remover()
+# Load model
+remover = Remover() # default setting
+remover = Remover(fast=True, jit=True, device='cuda:0', ckpt='~/latest.pth') # custom setting
 
 # Usage for image
-img = Image.open('samples/aeroplane.jpg').convert('RGB') # read image as rgb format
+img = Image.open('samples/aeroplane.jpg').convert('RGB') # read image
 
 out = remover.process(img) # default setting - transparent background
 out = remover.process(img, type='rgba') # same as above

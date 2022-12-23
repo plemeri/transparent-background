@@ -39,6 +39,12 @@ CONFIG = {
 
 class Remover:
     def __init__(self, fast=False, jit=False, device=None, ckpt=None):
+        """
+        fast   (default False): resize input into small size for fast computation
+        jit    (default False): use TorchScript for fast computation
+        device (default cuda:0 if available): specifying device for computation
+        ckpt   (default download from server): specifying model checkpoint
+        """
         key = "fast" if fast else "base"
         self.meta = CONFIG[key]
     
