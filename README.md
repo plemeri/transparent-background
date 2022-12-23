@@ -82,7 +82,7 @@ $ pip install -e .
 $ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE] (--fast) (--jit)
 
 # for apple silicon mps backend (requires torch >= 1.13)
-$ PYTORCH_ENABLE_MPS_FALLBACK=1 transparent-background --source [SOURCE] --dest [DEST] --type [TYPE] (--fast) (--jit)
+$ PYTORCH_ENABLE_MPS_FALLBACK=1 transparent-background --source [SOURCE] --dest [DEST] --type [TYPE] --ckpt [CKPT] (--fast) (--jit)
 ```
 * `--source [SOURCE]`: Specify your data in this argument.
     * Single image - `image.png`
@@ -90,20 +90,17 @@ $ PYTORCH_ENABLE_MPS_FALLBACK=1 transparent-background --source [SOURCE] --dest 
     * Single video - `video.mp4`
     * Folder containing videos - `path/to/vid/folder`
     * Integer for webcam address - `0` (e.g., if your webcam is at `/dev/video0`.)
-* `--dest [DEST]` (optional): Specify your destination folder. If not specified, it will be saved in current directory.
-* `--type [TYPE]`: Choose between `rgba`, `map` `green`, `blur`, `overlay`, and another image file.
+* `--dest [DEST]` (optional): Specify your destination folder. Default location is current directory.
+* `--type [TYPE]` (optional): Choose between `rgba`, `map` `green`, `blur`, `overlay`, and another image file. Default is `rgba`.
     * `rgba` will generate RGBA output regarding saliency score as an alpha map. Note that this will not work for video and webcam input. 
     * `map` will output saliency map only. 
     * `green` will change the background with green screen. 
     * `blur` will blur the background.
     * `overlay` will cover the salient object with translucent green color, and highlight the edges.
-    * Another image file (e.g., `backgroud.png`) will be used as a background, and the object will be overlapped on it.
-* `--fast`: Fast mode. If specified, it will use low-resolution input and model trained with LR scale. May decrease performance but reduces inference time and gpu memory usage. 
-* `--jit`: Torchscript mode. If specified, it will trace model with pytorch built-in torchscript JIT compiler. May cause delay in initialization, but reduces inference time and gpu memory usage.
-
-    Examples of different TYPE argument choices|
-    :-|
-    <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_type.png >|
+    * Another image file (e.g., `samples/backgroud.png`) will be used as a background, and the object will be overlapped on it.
+* `--ckpt [CKPT]` (optional): Use other checkpoint file. Default is trained with composite dataset and will be automatically downloaded if not available. Please refer to [Model Zoo](https://github.com/plemeri/InSPyReNet/blob/main/docs/model_zoo.md) from [InSPyReNet](https://github.com/plemeri/InSPyReNet) for available pre-trained checkpoints.
+* `--fast` (optional): Fast mode. If specified, it will use low-resolution input and model trained with LR scale. May decrease performance but reduces inference time and gpu memory usage. 
+* `--jit` (optional): Torchscript mode. If specified, it will trace model with pytorch built-in torchscript JIT compiler. May cause delay in initialization, but reduces inference time and gpu memory usage.
     
 ### :crystal_ball: Python API
 * Usage Example

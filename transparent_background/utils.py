@@ -18,6 +18,7 @@ def parse_args():
     parser.add_argument('--fast',   '-f', action='store_true',      help="Speed up inference speed by using small scale, but decreases output quality.")
     parser.add_argument('--jit',    '-j', action='store_true',      help="Speed up inference speed by using torchscript, but decreases output quality.")
     parser.add_argument('--device', '-D', type=str, default=None,   help="Designate device. If not specified, it will find available device.")
+    parser.add_argument('--ckpt',   '-c', type=str, default=None,   help="Designate checkpoint. If not specified, it will download or load pre-downloaded default checkpoint.")
     return parser.parse_args()
 
 def get_backend():
@@ -132,7 +133,7 @@ class ImageLoader:
         
         img = Image.open(self.images[self.index]).convert('RGB')
         name = os.path.split(self.images[self.index])[-1]
-        name = os.path.splitext(name)[0]
+        # name = os.path.splitext(name)[0]
             
         self.index += 1
         return img, name
@@ -163,7 +164,7 @@ class VideoLoader:
             self.fps = self.cap.get(cv2.CAP_PROP_FPS)
         ret, frame = self.cap.read()
         name = os.path.split(self.videos[self.index])[-1]
-        name = os.path.splitext(name)[0]
+        # name = os.path.splitext(name)[0]
         if ret is False:
             self.cap.release()
             self.cap = None

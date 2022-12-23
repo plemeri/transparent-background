@@ -38,12 +38,9 @@ CONFIG = {
 }
 
 class Remover:
-    def __init__(self, fast=False, jit=False, device=None):
+    def __init__(self, fast=False, jit=False, device=None, ckpt=None):
         key = "fast" if fast else "base"
         self.meta = CONFIG[key]
-        ckpt_dir = os.path.expanduser(os.path.join('~', '.transparent-background'))
-        if os.path.isdir(ckpt_dir) is False:
-            os.makedirs(ckpt_dir, exist_ok=True)
     
         if device is not None:
             self.device=device
@@ -55,15 +52,21 @@ class Remover:
                 self.device = "mps:0"
         
         download = False
-        ckpt_name = self.meta['ckpt_name']
+        if ckpt is None:
+            ckpt_dir = os.path.expanduser(os.path.join('~', '.transparent-background'))
+            if os.path.isdir(ckpt_dir) is False:
+                os.makedirs(ckpt_dir, exist_ok=True)
+            ckpt_name = self.meta['ckpt_name']
         
-        if not os.path.isfile(os.path.join(ckpt_dir, ckpt_name)):
-            download = True
-        elif self.meta['md5'] != hashlib.md5(open(os.path.join(ckpt_dir, ckpt_name), 'rb').read()).hexdigest():
-            download = True
-        
-        if download:
-            gdown.download(self.meta['url'], os.path.join(ckpt_dir, ckpt_name), fuzzy=True)
+            if not os.path.isfile(os.path.join(ckpt_dir, ckpt_name)):
+                download = True
+            elif self.meta['md5'] != hashlib.md5(open(os.path.join(ckpt_dir, ckpt_name), 'rb').read()).hexdigest():
+                download = True
+            
+            if download:
+                gdown.download(self.meta['url'], os.path.join(ckpt_dir, ckpt_name), fuzzy=True)
+        else:
+            ckpt_dir, ckpt_name = os.path.split(os.path.abspath(ckpt))
         
         self.model = InSPyReNet_SwinB(depth=64, pretrained=False, **self.meta)
         self.model.eval()
@@ -89,8 +92,9 @@ class Remover:
                                             totensor()])
 
         self.background = None
-        desc = 'Mode: {} | Device: {} | Torchscript: {}'.format(key, self.device, 'enabled' if jit else 'disabled')
-        print('=' * (len(desc) + 2) + '\n', desc, '\n' + '=' * (len(desc) + 2))
+        desc = 'Mode={}, Device={}, Torchscript={}'.format(key, self.device, 'enabled' if jit else 'disabled')
+        # print('=' * (len(desc) + 2) + '\n', desc, '\n' + '=' * (len(desc) + 2))
+        print('Settings -> {}'.format(desc))
     
     def process(self, img, type='rgba'):
         shape = img.size[::-1]            
@@ -138,7 +142,7 @@ class Remover:
 
 def console():
     args = parse_args()
-    remover = Remover(fast=args.fast, jit=args.jit, device=args.device)
+    remover = Remover(fast=args.fast, jit=args.jit, device=args.device, ckpt=args.ckpt)
 
     if args.source.isnumeric() is True:
         save_dir = None
@@ -169,23 +173,24 @@ def console():
         os.makedirs(save_dir, exist_ok=True)
     
     loader = eval(_format + 'Loader')(args.source)
-    frame_progress = tqdm.tqdm(total=len(loader), position=1 if _format == 'Video' else 0, leave=False, bar_format='{desc:<15}{percentage:3.0f}%|{bar:50}{r_bar}')
-    sample_progress = tqdm.tqdm(total=len(loader), desc='Total:', position=0, bar_format='{desc:<15}{percentage:3.0f}%|{bar:50}{r_bar}') if _format == 'Video' else None
+    frame_progress = tqdm.tqdm(total=len(loader), position=1 if (_format == 'Video' and len(loader) > 1) else 0, leave=False, bar_format='{desc:<15}{percentage:3.0f}%|{bar:50}{r_bar}')
+    sample_progress = tqdm.tqdm(total=len(loader), desc='Total:', position=0, bar_format='{desc:<15}{percentage:3.0f}%|{bar:50}{r_bar}') if (_format == 'Video' and len(loader) > 1) else None
     writer = None
 
     for img, name in loader:
         frame_progress.set_description('{}'.format(name))
         if args.type.lower().endswith(('.jpg', '.jpeg', '.png')):
-            outname = '{}_{}'.format(name, os.path.splitext(os.path.split(args.type)[-1])[0])
+            outname = '{}_{}'.format(os.path.splitext(name)[0], os.path.splitext(os.path.split(args.type)[-1])[0])
         else:
-            outname = '{}_{}'.format(name, args.type) 
+            outname = '{}_{}'.format(os.path.splitext(name)[0], args.type) 
         
         if _format == 'Video' and writer is None:
             writer = cv2.VideoWriter(os.path.join(save_dir, '{}.mp4'.format(outname)), cv2.VideoWriter_fourcc(*'mp4v'), loader.fps, img.size)
             frame_progress.refresh()
             frame_progress.reset()
             frame_progress.total = int(loader.cap.get(cv2.CAP_PROP_FRAME_COUNT))
-            sample_progress.update()
+            if sample_progress is not None:
+                sample_progress.update()
             
         if _format == 'Video' and img is None:
             if writer is not None:
@@ -207,4 +212,4 @@ def console():
                 cv2.imshow('transparent-background', cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
         frame_progress.update()
         
-    print('Done. Results are saved in {}'.format(os.path.abspath(save_dir)))
+    print('\nDone. Results are saved in {}'.format(os.path.abspath(save_dir)))
