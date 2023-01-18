@@ -24,7 +24,7 @@ warnings.filterwarnings("ignore")
 
 CONFIG = {
 'base':     {'url': "https://drive.google.com/file/d/13oBl5MTVcWER3YU4fSxW3ATlVfueFQPY/view?usp=share_link",
-             'md5': "bf17ee133697bcb91c72437f55e5c659",
+             'md5': "d692e3dd5fa1b9658949d452bebf1cda",
              'base_size': [1024, 1024],
              'threshold': None,
              'ckpt_name': "ckpt_base.pth",
