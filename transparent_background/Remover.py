@@ -54,7 +54,7 @@ class Remover:
             self.device = "cpu"
             if torch.cuda.is_available():
                 self.device = "cuda:0"
-            elif version.parse(torch.__version__) > version.parse("1.13") and torch.backends.mps.is_available():
+            elif version.parse(torch.__version__) >= version.parse("1.13") and torch.backends.mps.is_available():
                 self.device = "mps:0"
         
         download = False
