@@ -150,6 +150,10 @@ cap.release()
 writer.release()
 ```
 
+## :tv: Tutorial
+
+[rsreetech](https://github.com/rsreetech) shared a tutorial using colab. [[Youtube](https://www.youtube.com/watch?v=jKuQEnKmv4A)]
+
 ## :outbox_tray: Uninstall
 
 ```
