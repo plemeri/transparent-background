@@ -16,6 +16,10 @@ Image | Video | Webcam
 :-:|:-:|:-:
 <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_aeroplane.gif height=200px> | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_b5.gif height=200px> | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_webcam.gif height=200px>
 
+## :newspaper: News
+
+Our package is currently not working properly on small images without `--fast` argument. Sorry for the inconvenience and we'll fix this issue with better algorithm coming out shortly.
+
 ## :inbox_tray: Installation
 
 ### Dependencies (python packages)
@@ -93,6 +97,8 @@ $ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE] --ckpt [C
     * `rgba` will generate RGBA output regarding saliency score as an alpha map. Note that this will not work for video and webcam input. 
     * `map` will output saliency map only. 
     * `green` will change the background with green screen. 
+    * `white` will change the background with white color. -> [2023.05.24] Contributed by [carpedm20](https://github.com/carpedm20) 
+    * `'[255, 0, 0]'` will change the background with color code [255, 0, 0]. Please use with single quotes. -> [2023.05.24] Contributed by [carpedm20](https://github.com/carpedm20) 
     * `blur` will blur the background.
     * `overlay` will cover the salient object with translucent green color, and highlight the edges.
     * Another image file (e.g., `samples/backgroud.png`) will be used as a background, and the object will be overlapped on it.
@@ -119,6 +125,8 @@ out = remover.process(img) # default setting - transparent background
 out = remover.process(img, type='rgba') # same as above
 out = remover.process(img, type='map') # object map only
 out = remover.process(img, type='green') # image matting - green screen
+out = remover.process(img, type='white') # change backround with white color -> [2023.05.24] Contributed by carpedm20
+out = remover.process(img, type=[255, 0, 0]) # change background with color code [255, 0, 0] -> [2023.05.24] Contributed by carpedm20
 out = remover.process(img, type='blur') # blur background
 out = remover.process(img, type='overlay') # overlay object map onto the image
 out = remover.process(img, type='samples/background.jpg') # use another image as a background

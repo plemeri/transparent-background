@@ -116,6 +116,9 @@ class Remover:
         pred = pred.numpy().squeeze()   
         
         img = np.array(img)
+
+        if type.startswith('['):
+            type = [int(i) for i in type[1:-1].split(',')]
         
         if type == 'map':
             img = (np.stack([pred] * 3, axis=-1) * 255).astype(np.uint8)

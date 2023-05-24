@@ -14,6 +14,8 @@ out = remover.process(img) # default setting - transparent background
 out = remover.process(img, type='rgba') # same as above
 out = remover.process(img, type='map') # object map only
 out = remover.process(img, type='green') # image matting - green screen
+out = remover.process(img, type='white') # change backround with white color
+out = remover.process(img, type=[255, 0, 0]) # change background with color code [255, 0, 0]
 out = remover.process(img, type='blur') # blur background
 out = remover.process(img, type='overlay') # overlay object map onto the image
 out = remover.process(img, type='samples/background.jpg') # use another image as a background
