@@ -171,3 +171,9 @@ pip uninstall transparent-background
 ## :page_facing_up: Licence
 
 See [LICENCE](https://github.com/plemeri/transparent-background/blob/main/LICENSE) for more details.
+
+### Acknowledgement
+
+This work was supported by Institute of Information & communications Technology Planning & Evaluation (IITP) grant funded by the Korea government (MSIT) 
+(No.2017-0-00897, Development of Object Detection and Recognition for Intelligent Vehicles) and 
+(No.B0101-15-0266, Development of High Performance Visual BigData Discovery Platform for Large-Scale Realtime Data Analysis)
