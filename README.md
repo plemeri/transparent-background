@@ -18,7 +18,8 @@ Image | Video | Webcam
 
 ## :newspaper: News
 
-Our package is currently not working properly on small images without `--fast` argument. Sorry for the inconvenience and we'll fix this issue with better algorithm coming out shortly.
+* Our package is currently not working properly on small images without `--fast` argument. Sorry for the inconvenience and we'll fix this issue with better algorithm coming out shortly.
+* [2023.09.22] For the issue with small images without `--fast` argument, please download [This Checkpoint](https://drive.google.com/file/d/13YER0ri0RZkTdGQqWiwK795i39FrXNKL/view?usp=sharing). After some user feedback (create issue or contact me), I'll decide to substitute the current checkpoint to the newer one or train again with different approach.
 
 ## :inbox_tray: Installation
 
