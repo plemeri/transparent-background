@@ -172,6 +172,18 @@ pip uninstall transparent-background
 
 See [LICENCE](https://github.com/plemeri/transparent-background/blob/main/LICENSE) for more details.
 
+### Proxies
+
+`transparent-background` respects the `http_proxy` environment variable. If your internet connection is behind a HTTP proxy, e.g. `http://192.168.1.80:8080`, you can set environment variables to let `transparent-background` download assets it need through your proxy, e.g.
+```
+http_proxy=http://192.168.1.80:8080 transparent-background ...
+```
+or on Windows
+```
+set http_proxy=http://192.168.1.80:8080
+transparent-background ...
+```
+
 ### Acknowledgement
 
 This work was supported by Institute of Information & communications Technology Planning & Evaluation (IITP) grant funded by the Korea government (MSIT) 
