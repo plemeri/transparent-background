@@ -70,7 +70,8 @@ class Remover:
                 download = True
             
             if download:
-                gdown.download(self.meta['url'], os.path.join(ckpt_dir, ckpt_name), fuzzy=True)
+                proxy = os.environ.get('http_proxy')
+                gdown.download(self.meta['url'], os.path.join(ckpt_dir, ckpt_name), fuzzy=True, proxy=proxy)
         else:
             ckpt_dir, ckpt_name = os.path.split(os.path.abspath(ckpt))
         
