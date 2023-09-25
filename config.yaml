@@ -1,0 +1,21 @@
+base:
+  url: "https://drive.google.com/file/d/13oBl5MTVcWER3YU4fSxW3ATlVfueFQPY/view?usp=share_link"
+  md5: "d692e3dd5fa1b9658949d452bebf1cda"
+  ckpt_name: "ckpt_base.pth"
+  http_proxy: NULL
+  base_size: [1024, 1024]
+
+
+fast:
+  url: "https://drive.google.com/file/d/1iRX-0MVbUjvAVns5MtVdng6CQlGOIo3m/view?usp=share_link"
+  md5: "9efdbfbcc49b79ef0f7891c83d2fd52f"
+  ckpt_name: "ckpt_fast.pth"
+  http_proxy: NULL
+  base_size: [384, 384]
+
+base-nightly:
+  url: "https://drive.google.com/file/d/13YER0ri0RZkTdGQqWiwK795i39FrXNKL/view?usp=drive_link"
+  md5: NULL
+  ckpt_name: "ckpt_base_nightly.pth"
+  http_proxy: NULL
+  base_size: [1024, 1024]

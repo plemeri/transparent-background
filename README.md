@@ -20,6 +20,7 @@ Image | Video | Webcam
 
 * Our package is currently not working properly on small images without `--fast` argument. Sorry for the inconvenience and we'll fix this issue with better algorithm coming out shortly.
 * [2023.09.22] For the issue with small images without `--fast` argument, please download [This Checkpoint](https://drive.google.com/file/d/13YER0ri0RZkTdGQqWiwK795i39FrXNKL/view?usp=sharing). After some user feedback (create issue or contact me), I'll decide to substitute the current checkpoint to the newer one or train again with different approach.
+* [2023.09.25] The above checkpoint is now available with `--mode base-nightly` argument. `--fast` argument is deprecated. Use `--mode [MODE]` instead. `--mode` argument supports `base`, `fast` and `base-nightly`. Note that `base-nightly` can be changed without any notice.
 
 ## :inbox_tray: Installation
 
@@ -79,13 +80,52 @@ $ pip install git+https://github.com/plemeri/transparent-background.git
 $ pip install .
 ```
 
+### [New] Configuration
+
+`transparent-background` now supports external configuration rather than hard coded assets (e.g., checkpoint download url). 
+* The config file will be added in your home directory `~/.transparent-background/config.yaml`
+* You may change the `url` argument to your google drive download link. (Please note that only google drive is supported.)
+* You may change the `md5` argument to your file's md5 checksum. Or, set `md5` to `NULL` to skip verification.
+* You may add `http_proxy` argument to specify the proxy address as you need. If your internet connection is behind a HTTP proxy (e.g. `http://192.168.1.80:8080`), you can set this argument. (Contributed by [bombless](https://github.com/bombless))
+```yaml
+base:
+  url: "https://drive.google.com/file/d/13oBl5MTVcWER3YU4fSxW3ATlVfueFQPY/view?usp=share_link" # google drive url
+  md5: "d692e3dd5fa1b9658949d452bebf1cda" # md5 hash (optional)
+  ckpt_name: "ckpt_base.pth" # file name
+  http_proxy: NULL # specify if needed (Contributed by bombless)
+  base_size: [1024, 1024]
+
+fast:
+  url: "https://drive.google.com/file/d/1iRX-0MVbUjvAVns5MtVdng6CQlGOIo3m/view?usp=share_link"
+  md5: NULL # change md5 to NULL if you want to suppress md5 checksum process
+  ckpt_name: "ckpt_fast.pth"
+  http_proxy: "http://192.168.1.80:8080"
+  base_size: [384, 384]
+
+```
+
+* If you are an advanced user, maybe you can try making `custom` mode by training custom model from [InSPyReNet](https://github.com/plemeri/InSPyReNet.git).
+
+```yaml
+custom:
+  url: [your google drive url]
+  md5: NULL
+  ckpt_name: "ckpt_custom.pth"
+  http_proxy: "http://192.168.1.81:8080"
+  base_size: [768, 768]
+```
+```bash
+$ transparent-background --source test.png --mode custom
+```
+
 ## :pencil2: Usage
 
 ### :computer: Command Line
 
 ```bash
 # for apple silicon mps backend, use "PYTORCH_ENABLE_MPS_FALLBACK=1" before the command (requires torch >= 1.13)
-$ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE] --ckpt [CKPT] (--fast) (--jit)
+$ transparent-background --source [SOURCE]
+$ transparent-background --source [SOURCE] --dest [DEST] --threshold [THRESHOLD] --type [TYPE] --ckpt [CKPT] --mode [MODE]  (--fast) (--jit)
 ```
 * `--source [SOURCE]`: Specify your data in this argument.
     * Single image - `image.png`
@@ -94,6 +134,7 @@ $ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE] --ckpt [C
     * Folder containing videos - `path/to/vid/folder`
     * Integer for webcam address - `0` (e.g., if your webcam is at `/dev/video0`.)
 * `--dest [DEST]` (optional): Specify your destination folder. Default location is current directory.
+* `--threshold [THRESHOLD]` (optional): Designate threhsold value from `0.0` to `1.0` for hard prediction. Do not use if you want soft prediction.
 * `--type [TYPE]` (optional): Choose between `rgba`, `map` `green`, `blur`, `overlay`, and another image file. Default is `rgba`.
     * `rgba` will generate RGBA output regarding saliency score as an alpha map. Note that this will not work for video and webcam input. 
     * `map` will output saliency map only. 
@@ -104,7 +145,8 @@ $ transparent-background --source [SOURCE] --dest [DEST] --type [TYPE] --ckpt [C
     * `overlay` will cover the salient object with translucent green color, and highlight the edges.
     * Another image file (e.g., `samples/backgroud.png`) will be used as a background, and the object will be overlapped on it.
 * `--ckpt [CKPT]` (optional): Use other checkpoint file. Default is trained with composite dataset and will be automatically downloaded if not available. Please refer to [Model Zoo](https://github.com/plemeri/InSPyReNet/blob/main/docs/model_zoo.md) from [InSPyReNet](https://github.com/plemeri/InSPyReNet) for available pre-trained checkpoints.
-* `--fast` (optional): Fast mode. If specified, it will use low-resolution input and model trained with LR scale. May decrease performance but reduces inference time and gpu memory usage. 
+* `--mode [MODE]` (optional): choose between `base` and `fast` mode. Also, use `base-nightly` for nightly release checkpoint. Replacing `--fast` argument.
+* `--fast` (optional, **deprecated, will be removed future release**): Fast mode. If specified, it will use low-resolution input and model trained with LR scale. May decrease performance but reduces inference time and gpu memory usage. 
 * `--jit` (optional): Torchscript mode. If specified, it will trace model with pytorch built-in torchscript JIT compiler. May cause delay in initialization, but reduces inference time and gpu memory usage.
     
 ### :crystal_ball: Python API
@@ -117,7 +159,8 @@ from transparent_background import Remover
 
 # Load model
 remover = Remover() # default setting
-remover = Remover(fast=True, jit=True, device='cuda:0', ckpt='~/latest.pth') # custom setting
+remover = Remover(mode='fast', jit=True, device='cuda:0', ckpt='~/latest.pth') # custom setting
+remover = Remover(mode='base-nightly') # nightly release checkpoint
 
 # Usage for image
 img = Image.open('samples/aeroplane.jpg').convert('RGB') # read image
@@ -131,6 +174,8 @@ out = remover.process(img, type=[255, 0, 0]) # change background with color code
 out = remover.process(img, type='blur') # blur background
 out = remover.process(img, type='overlay') # overlay object map onto the image
 out = remover.process(img, type='samples/background.jpg') # use another image as a background
+
+out = remover.process(img, threshold=0.5) # use threhold parameter for hard prediction. do not use if soft prediction is needed.
 
 Image.fromarray(out).save('output.png') # save result
 
@@ -172,18 +217,6 @@ pip uninstall transparent-background
 ## :page_facing_up: Licence
 
 See [LICENCE](https://github.com/plemeri/transparent-background/blob/main/LICENSE) for more details.
-
-### Proxies
-
-`transparent-background` respects the `http_proxy` environment variable. If your internet connection is behind a HTTP proxy, e.g. `http://192.168.1.80:8080`, you can set environment variables to let `transparent-background` download assets it need through your proxy, e.g.
-```
-http_proxy=http://192.168.1.80:8080 transparent-background ...
-```
-or on Windows
-```
-set http_proxy=http://192.168.1.80:8080
-transparent-background ...
-```
 
 ### Acknowledgement
 

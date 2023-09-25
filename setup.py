@@ -1,3 +1,5 @@
+import os
+import shutil
 import setuptools
 
 with open("README.md", "r") as fh:
@@ -19,10 +21,14 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.8',
-    install_requires=['torch>=1.7.1', 'torchvision>=0.8.2', 'opencv-python>=4.6.0.66', 'timm>=0.6.11', 'tqdm>=4.64.1', 'kornia>=0.5.4', 'gdown>=4.5.4', 'pyvirtualcam>=0.6.0'],
+    install_requires=['torch>=1.7.1', 'torchvision>=0.8.2', 'opencv-python>=4.6.0.66', 'timm>=0.6.11', 'tqdm>=4.64.1', 'kornia>=0.5.4', 'gdown>=4.5.4', 'pyvirtualcam>=0.6.0', 'easydict>=1.10', 'pyyaml>=6.0'],
     entry_points={
         "console_scripts": [
             "transparent-background=transparent_background:console",
         ],
     },
 )
+
+home_dir = os.path.expanduser(os.path.join("~", ".transparent-background"))
+os.makedirs(home_dir, exist_ok=True)
+shutil.copy("config.yaml", os.path.join(home_dir, "config.yaml"))

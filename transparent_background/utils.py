@@ -1,6 +1,7 @@
 import os
 import re
 import cv2
+import yaml
 import torch
 import hashlib
 import argparse
@@ -9,16 +10,19 @@ import numpy as np
 
 from PIL import Image
 from threading import Thread
+from easydict import EasyDict
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--source', '-s', type=str,                 help="Path to the source. Single image, video, directory of images, directory of videos is supported.")
-    parser.add_argument('--dest',   '-d', type=str, default=None,   help="Path to destination. Results will be stored in current directory if not specified.")
-    parser.add_argument('--type',   '-t', type=str, default='rgba', help="Specify output type. If not specified, output results will make the background transparent. Please refer to the documentation for other types.")
-    parser.add_argument('--fast',   '-f', action='store_true',      help="Speed up inference speed by using small scale, but decreases output quality.")
-    parser.add_argument('--jit',    '-j', action='store_true',      help="Speed up inference speed by using torchscript, but decreases output quality.")
-    parser.add_argument('--device', '-D', type=str, default=None,   help="Designate device. If not specified, it will find available device.")
-    parser.add_argument('--ckpt',   '-c', type=str, default=None,   help="Designate checkpoint. If not specified, it will download or load pre-downloaded default checkpoint.")
+    parser.add_argument('--source',    '-s',  type=str,                 help="Path to the source. Single image, video, directory of images, directory of videos is supported.")
+    parser.add_argument('--dest',      '-d',  type=str, default=None,   help="Path to destination. Results will be stored in current directory if not specified.")
+    parser.add_argument('--type',      '-t',  type=str, default='rgba', help="Specify output type. If not specified, output results will make the background transparent. Please refer to the documentation for other types.")
+    parser.add_argument('--fast',      '-f',  action='store_true',      help="(Deprecated) Speed up inference speed by using small scale, but decreases output quality.")
+    parser.add_argument('--jit',       '-j',  action='store_true',      help="Speed up inference speed by using torchscript, but decreases output quality.")
+    parser.add_argument('--device',    '-D',  type=str, default=None,   help="Designate device. If not specified, it will find available device.")
+    parser.add_argument('--mode',      '-m',  type=str, default='base', help="choose between base and fast mode. Also, use base-nightly for nightly release checkpoint.")
+    parser.add_argument('--ckpt',      '-c',  type=str, default=None,   help="Designate checkpoint. If not specified, it will download or load pre-downloaded default checkpoint.")
+    parser.add_argument('--threshold', '-th', type=str, default=None,   help="Designate threshold. If specified, it will output hard prediction above threshold. If not specified, it will output soft prediction.")
     return parser.parse_args()
 
 def get_backend():
@@ -28,6 +32,12 @@ def get_backend():
         return "mps:0"
     else:
         return "cpu"
+    
+def load_config(config_dir, easy=True):
+    cfg = yaml.load(open(config_dir), yaml.FullLoader)
+    if easy is True:
+        cfg = EasyDict(cfg)
+    return cfg
 
 def get_format(source):
     img_count = len([i for i in source if i.lower().endswith(('.jpg', '.png', '.jpeg'))])
