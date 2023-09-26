@@ -25,19 +25,27 @@ from transparent_background.utils import *
 class Remover:
     def __init__(self, mode="base", jit=False, device=None, ckpt=None, fast=None):
         """
-        fast   (default False): resize input into small size for fast computation
-        jit    (default False): use TorchScript for fast computation
-        device (default cuda:0 if available): specifying device for computation
-        ckpt   (default download from server): specifying model checkpoint
+        Args:
+            mode   (str): Choose among below options
+                                   base -> slow & large gpu memory required, high quality results
+                                   fast -> resize input into small size for fast computation
+                                   base-nightly -> nightly release for base mode
+            jit    (bool): use TorchScript for fast computation
+            device (str, optional): specifying device for computation. find available GPU resource if not specified.
+            ckpt   (str, optional): specifying model checkpoint. find downloaded checkpoint or try download if not specified.
+            fast   (bool, optional, DEPRECATED): replaced by mode argument. use fast mode if True.
         """
         home_dir = os.path.expanduser(os.path.join("~", ".transparent-background"))
+        os.makedirs(home_dir, exist_ok=True)
+
+        if not os.path.isfile(os.path.join(home_dir, "config.yaml")):
+            shutil.copy(os.path.join(os.path.curdir, "config.yaml"), os.path.join(home_dir, "config.yaml"))
+        self.meta = load_config(os.path.join(home_dir, "config.yaml"))[mode]
 
         if fast is not None:
             warnings.warn("fast argument is deprecated. use mode argument instead.")
             if fast:
                 mode = "fast"
-
-        self.meta = load_config(os.path.join(home_dir, "config.yaml"))[mode]
 
         if device is not None:
             self.device = device
@@ -120,6 +128,22 @@ class Remover:
         print("Settings -> {}".format(desc))
 
     def process(self, img, type="rgba", threshold=None):
+        """
+        Args:
+            img (PIL.Image): input image as PIL.Image type
+            type (str): output type option as below.
+                        'rgba' will generate RGBA output regarding saliency score as an alpha map. 
+                        'green' will change the background with green screen.
+                        'white' will change the background with white color.
+                        '[255, 0, 0]' will change the background with color code [255, 0, 0]. 
+                        'blur' will blur the background.
+                        'overlay' will cover the salient object with translucent green color, and highlight the edges.
+                        Another image file (e.g., 'samples/backgroud.png') will be used as a background, and the object will be overlapped on it.
+            threshold (float or str, optional): produce hard prediction w.r.t specified threshold value (0.0 ~ 1.0)
+        Returns:
+            PIL.Image: output image
+
+        """
         shape = img.size[::-1]
         x = self.transform(img)
         x = x.unsqueeze(0)
@@ -181,7 +205,7 @@ class Remover:
                 1 - pred[..., np.newaxis]
             )
 
-        return img.astype(np.uint8)
+        return Image.fromarray(img.astype(np.uint8))
 
 
 def console():
@@ -269,16 +293,16 @@ def console():
         out = remover.process(img, type=args.type, threshold=args.threshold)
 
         if _format == "Image":
-            Image.fromarray(out).save(os.path.join(save_dir, "{}.png".format(outname)))
+            out.save(os.path.join(save_dir, "{}.png".format(outname)))
         elif _format == "Video" and writer is not None:
-            writer.write(cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
+            writer.write(cv2.cvtColor(np.array(out), cv2.COLOR_BGR2RGB))
         elif _format == "Webcam":
             if vcam is not None:
-                vcam.send(out)
+                vcam.send(np.array(out))
                 vcam.sleep_until_next_frame()
             else:
                 cv2.imshow(
-                    "transparent-background", cv2.cvtColor(out, cv2.COLOR_BGR2RGB)
+                    "transparent-background", cv2.cvtColor(np.array(out), cv2.COLOR_BGR2RGB)
                 )
         frame_progress.update()
 

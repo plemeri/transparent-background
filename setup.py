@@ -27,8 +27,5 @@ setuptools.setup(
             "transparent-background=transparent_background:console",
         ],
     },
+    package_data={'transparent-background': ['~', '.transparent-background', 'config.yaml']}
 )
-
-home_dir = os.path.expanduser(os.path.join("~", ".transparent-background"))
-os.makedirs(home_dir, exist_ok=True)
-shutil.copy("config.yaml", os.path.join(home_dir, "config.yaml"))
