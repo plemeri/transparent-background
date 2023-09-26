@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="transparent-background",
-    version="1.2.5",
+    version="1.2.7",
     author="Taehun Kim",
     author_email="taehoon1018@postech.ac.kr",
     description="Make images with transparent background",
@@ -27,5 +27,5 @@ setuptools.setup(
             "transparent-background=transparent_background:console",
         ],
     },
-    package_data={'transparent-background': ['~', '.transparent-background', 'config.yaml']}
+    include_package_data=True
 )

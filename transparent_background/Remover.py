@@ -39,7 +39,7 @@ class Remover:
         os.makedirs(home_dir, exist_ok=True)
 
         if not os.path.isfile(os.path.join(home_dir, "config.yaml")):
-            shutil.copy(os.path.join(os.path.curdir, "config.yaml"), os.path.join(home_dir, "config.yaml"))
+            shutil.copy(os.path.join(repopath, "config.yaml"), os.path.join(home_dir, "config.yaml"))
         self.meta = load_config(os.path.join(home_dir, "config.yaml"))[mode]
 
         if fast is not None:
