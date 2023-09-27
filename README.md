@@ -153,6 +153,7 @@ $ transparent-background --source [SOURCE] --dest [DEST] --threshold [THRESHOLD]
 * Usage Example
 ```python
 import cv2
+import numpy as np
 
 from PIL import Image
 from transparent_background import Remover

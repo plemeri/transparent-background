@@ -1,11 +1,13 @@
 import cv2
+import numpy as np
 
 from PIL import Image
 from transparent_background import Remover
 
 # Load model
 remover = Remover() # default setting
-remover = Remover(fast=True, jit=True, device='cuda:0', ckpt='~/latest.pth') # custom setting
+remover = Remover(mode='fast', jit=True, device='cuda:0', ckpt='~/latest.pth') # custom setting
+remover = Remover(mode='base-nightly') # nightly release checkpoint
 
 # Usage for image
 img = Image.open('samples/aeroplane.jpg').convert('RGB') # read image
@@ -20,7 +22,9 @@ out = remover.process(img, type='blur') # blur background
 out = remover.process(img, type='overlay') # overlay object map onto the image
 out = remover.process(img, type='samples/background.jpg') # use another image as a background
 
-Image.fromarray(out).save('output.png') # save result
+out = remover.process(img, threshold=0.5) # use threhold parameter for hard prediction.
+
+out.save('output.png') # save result
 
 # Usage for video
 cap = cv2.VideoCapture('samples/b5.mp4') # video reader for input
@@ -41,7 +45,7 @@ while cap.isOpened():
         writer = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, img.size) # video writer for output
 
     out = remover.process(img, type='map') # same as image, except for 'rgba' which is not for video.
-    writer.write(cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
+    writer.write(cv2.cvtColor(np.array(out), cv2.COLOR_BGR2RGB))
 
 cap.release()
 writer.release()
