@@ -21,6 +21,7 @@ Image | Video | Webcam
 * Our package is currently not working properly on small images without `--fast` argument. Sorry for the inconvenience and we'll fix this issue with better algorithm coming out shortly.
 * [2023.09.22] For the issue with small images without `--fast` argument, please download [This Checkpoint](https://drive.google.com/file/d/13YER0ri0RZkTdGQqWiwK795i39FrXNKL/view?usp=sharing). After some user feedback (create issue or contact me), I'll decide to substitute the current checkpoint to the newer one or train again with different approach.
 * [2023.09.25] The above checkpoint is now available with `--mode base-nightly` argument. `--fast` argument is deprecated. Use `--mode [MODE]` instead. `--mode` argument supports `base`, `fast` and `base-nightly`. Note that `base-nightly` can be changed without any notice.
+* [2023.10.19] Webcam support is not stable currently. We remove the dependency for the latest release. Install with extra dependency option `pip install transparent-background[webcam]` if you want to use webcam input.
 
 ## :inbox_tray: Installation
 
@@ -35,7 +36,7 @@ package | version (>=)
 `tqdm`          | `4.64.1`
 `kornia`        | `0.5.4`
 `gdown`         | `4.5.4`
-`pyvirtualcam`  | `0.6.0`
+`pyvirtualcam` (optional) | `0.6.0`
 
 Note: If you have any problem with [`pyvirtualcam`](https://pypi.org/project/pyvirtualcam/), please visit their github repository or pypi homepage. Due to the backend workflow for Windows and macOS, we only support Linux for webcam input.
 ### Dependencies (webcam input)
@@ -72,6 +73,7 @@ Follow the steps below.
 ```bash
 # via pypi
 $ pip install transparent-background
+$ pip install transparent-background[webcam] # with webcam dependency 
 
 # via github
 $ pip install git+https://github.com/plemeri/transparent-background.git

@@ -5,7 +5,7 @@ import gdown
 import torch
 import shutil
 import warnings
-import pyvirtualcam
+import importlib
 
 import numpy as np
 import torch.nn.functional as F
@@ -217,10 +217,14 @@ def console():
     if args.source.isnumeric() is True:
         save_dir = None
         _format = "Webcam"
-        try:
-            vcam = pyvirtualcam.Camera(width=640, height=480, fps=30)
-        except:
-            vcam = None
+        if importlib.util.find_spec('pyvirtualcam') is not None:
+            try:
+                import pyvirtualcam
+                vcam = pyvirtualcam.Camera(width=640, height=480, fps=30)
+            except:
+                vcam = None
+        else:
+            raise ImportError("pyvirtualcam not found. Install with \"pip install transparent-background[webcam]\"")
 
     elif os.path.isdir(args.source):
         save_dir = os.path.join(os.getcwd(), args.source.split(os.sep)[-1])
