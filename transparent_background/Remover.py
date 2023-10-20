@@ -121,7 +121,7 @@ class Remover:
             ]
         )
 
-        self.background = None
+        self.background = {'img': None, 'name': None, 'shape': None}
         desc = "Mode={}, Device={}, Torchscript={}".format(
             mode, self.device, "enabled" if jit else "disabled"
         )
@@ -198,10 +198,19 @@ class Remover:
             img[border != 0] = [120, 255, 155]
 
         elif type.lower().endswith((".jpg", ".jpeg", ".png")):
-            if self.background is None:
-                self.background = cv2.cvtColor(cv2.imread(type), cv2.COLOR_BGR2RGB)
-                self.background = cv2.resize(self.background, img.shape[:2][::-1])
-            img = img * pred[..., np.newaxis] + self.background * (
+            if self.background['name'] != type:
+                background_img = cv2.cvtColor(cv2.imread(type), cv2.COLOR_BGR2RGB)
+                background_img = cv2.resize(background_img, img.shape[:2][::-1])
+                
+                self.background['img'] = background_img
+                self.background['shape'] = img.shape[:2][::-1]
+                self.background['name'] = type
+            
+            elif self.background['shape'] != img.shape[:2][::-1]:
+                self.background['img'] = cv2.resize(self.background['img'], img.shape[:2][::-1])
+                self.background['shape'] = img.shape[:2][::-1]
+
+            img = img * pred[..., np.newaxis] + self.background['img'] * (
                 1 - pred[..., np.newaxis]
             )
 
