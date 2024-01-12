@@ -1,6 +1,7 @@
 import os
 import sys
 import tqdm
+import wget
 import gdown
 import torch
 import shutil
@@ -76,7 +77,12 @@ class Remover:
                     download = True
 
             if download:
-                gdown.download(self.meta.url, os.path.join(ckpt_dir, ckpt_name), fuzzy=True, proxy=self.meta.http_proxy)
+                if 'drive.google.com' in self.meta.url:
+                    gdown.download(self.meta.url, os.path.join(ckpt_dir, ckpt_name), fuzzy=True, proxy=self.meta.http_proxy)
+                elif 'github.com' in self.meta.url:
+                    wget.download(self.meta.url, os.path.join(ckpt_dir, ckpt_name))
+                else:
+                    raise NotImplementedError('Please use valid URL')
         else:
             ckpt_dir, ckpt_name = os.path.split(os.path.abspath(ckpt))
 
