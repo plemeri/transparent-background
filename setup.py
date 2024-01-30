@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="transparent-background",
-    version="1.2.10",
+    version="1.2.12",
     author="Taehun Kim",
     author_email="taehoon1018@postech.ac.kr",
     description="Make images with transparent background",
@@ -21,7 +21,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.8',
-    install_requires=['torch>=1.7.1', 'torchvision>=0.8.2', 'opencv-python>=4.6.0.66', 'timm>=0.6.11', 'tqdm>=4.64.1', 'kornia>=0.5.4', 'gdown>=4.5.4', 'easydict>=1.10', 'pyyaml>=6.0'],
+    install_requires=['torch>=1.7.1', 'torchvision>=0.8.2', 'opencv-python>=4.6.0.66', 'timm>=0.6.11', 'tqdm>=4.64.1', 'kornia>=0.5.4', 'gdown>=4.5.4', 'wget>=3.2', 'easydict>=1.10', 'pyyaml>=6.0'],
     extras_require={
         'webcam': ['pyvirtualcam>=0.6.0']
     },
