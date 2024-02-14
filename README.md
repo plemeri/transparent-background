@@ -7,7 +7,8 @@
     <a href="https://github.com/plemeri/transparent-background/blob/main/LICENSE"><img  src="https://img.shields.io/badge/license-MIT-blue"></a>
     <a href="https://pypi.org/project/transparent-background/"><image src="https://badge.fury.io/py/transparent-background.svg"></a>
     <a href="https://pepy.tech/project/transparent-background"><image src="https://static.pepy.tech/personalized-badge/transparent-background?period=total&units=none&left_color=grey&right_color=orange&left_text=Downloads"></a>
-    <a href="https://img.shields.io/github/sponsors/plemeri"><image src="https://img.shields.io/github/sponsors/plemeri"></a>    
+    <a href="https://img.shields.io/github/sponsors/plemeri"><image src="https://img.shields.io/github/sponsors/plemeri"></a>
+    <a href="https://www.buymeacoffee.com/plemeri" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="20" width="100"></a>
 </p>
 
 
