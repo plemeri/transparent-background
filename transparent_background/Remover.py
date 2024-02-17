@@ -79,7 +79,6 @@ class Remover:
                     download = True
 
             if download:
-                print(self.meta.url)
                 if 'drive.google.com' in self.meta.url:
                     gdown.download(self.meta.url, os.path.join(ckpt_dir, ckpt_name), fuzzy=True, proxy=self.meta.http_proxy)
                 elif 'github.com' in self.meta.url:
@@ -180,7 +179,7 @@ class Remover:
 
         with torch.no_grad():
             pred = self.model(x)
-            
+
         pred = F.interpolate(pred, shape, mode="bilinear", align_corners=True)
         pred = pred.data.cpu()
         pred = pred.numpy().squeeze()
