@@ -95,13 +95,12 @@ class dynamic_resize_a(ImageOnlyTransform):
 
     def apply(self, img, **params):
         size = img.shape[:2]
-        if (size[1] >= size[0]) and size[0] > self.L: 
-            size[0] = self.L
-            size[1] = int(size[1] * self.L / size[0])
-        elif (size[0] > size[1]) and size[1] > self.L:
+        if (size[0] >= size[1]) and size[1] > self.L: 
+            size[0] = size[0] / (size[1] / self.L)
             size[1] = self.L
-            size[0] = int(size[0] * self.L / size[1])
-
+        elif (size[1] > size[0]) and size[0] > self.L:
+            size[1] = size[1] / (size[0] / self.L)
+            size[0] = self.L
         size = (int(round(size[0] / 32)) * 32, int(round(size[1] / 32)) * 32)
         
         return A.resize(img, height=size[0], width=size[1])
