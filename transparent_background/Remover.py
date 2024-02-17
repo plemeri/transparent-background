@@ -175,8 +175,6 @@ class Remover:
             shape = img.size[::-1]
             x = self.transform(img)
 
-        print(x.shape)
-
         x = x.unsqueeze(0)
         x = x.to(self.device)
 
