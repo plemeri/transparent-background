@@ -89,12 +89,12 @@ class dynamic_resize:
         return img.resize(size, Image.BILINEAR)
 
 class dynamic_resize_a(ImageOnlyTransform):
-    def __init__(self, L, always_apply=False, p=1.0):
+    def __init__(self, L=1280, always_apply=False, p=1.0):
         super(dynamic_resize_a, self).__init__(always_apply, p)
         self.L = L
 
     def apply(self, img, **params):
-        size = img.shape[:2]
+        size = list(img.shape[:2])
         if (size[0] >= size[1]) and size[1] > self.L: 
             size[0] = size[0] / (size[1] / self.L)
             size[1] = self.L
