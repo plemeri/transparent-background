@@ -6,6 +6,8 @@ import torch
 import hashlib
 import argparse
 
+import albumentations as A
+from albumentations.core.transforms_interface import ImageOnlyTransform
 import numpy as np
 
 from PIL import Image
@@ -85,6 +87,27 @@ class dynamic_resize:
         size = (int(round(size[0] / 32)) * 32, int(round(size[1] / 32)) * 32)
     
         return img.resize(size, Image.BILINEAR)
+
+class dynamic_resize_a(ImageOnlyTransform):
+    def __init__(self, L, always_apply=False, p=1.0):
+        super(dynamic_resize_a, self).__init__(always_apply, p)
+        self.L = L
+
+    def apply(self, img, **params):
+        size = img.shape[:2]
+        if (size[1] >= size[0]) and size[0] > self.L: 
+            size[0] = self.L
+            size[1] = int(size[1] * self.L / size[0])
+        elif (size[0] > size[1]) and size[1] > self.L:
+            size[1] = self.L
+            size[0] = int(size[0] * self.L / size[1])
+
+        size = (int(round(size[0] / 32)) * 32, int(round(size[1] / 32)) * 32)
+        
+        return A.resize(img, height=size[0], width=size[1])
+
+    def get_transform_init_args_names(self):
+        return ("L",)
     
 class static_resize:
     def __init__(self, size=[1024, 1024]): 

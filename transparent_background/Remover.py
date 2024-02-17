@@ -11,6 +11,8 @@ import importlib
 import numpy as np
 import torch.nn.functional as F
 import torchvision.transforms as transforms
+import albumentations as A
+import albumentations.pytorch as AP
 
 from PIL import Image
 from packaging import version
@@ -77,6 +79,7 @@ class Remover:
                     download = True
 
             if download:
+                print(self.meta.url)
                 if 'drive.google.com' in self.meta.url:
                     gdown.download(self.meta.url, os.path.join(ckpt_dir, ckpt_name), fuzzy=True, proxy=self.meta.http_proxy)
                 elif 'github.com' in self.meta.url:
@@ -127,6 +130,18 @@ class Remover:
             ]
         )
 
+        self.cv2_transform = A.Compose(
+            [
+                A.Resize(*self.meta.base_size)
+                if jit
+                else A.Resize(384, 384)
+                if 'fast' in mode
+                else dynamic_resize_a(L=1280),
+                A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+                AP.ToTensorV2(),
+            ]
+        )
+
         self.background = {'img': None, 'name': None, 'shape': None}
         desc = "Mode={}, Device={}, Torchscript={}".format(
             mode, self.device, "enabled" if jit else "disabled"
@@ -136,7 +151,7 @@ class Remover:
     def process(self, img, type="rgba", threshold=None):
         """
         Args:
-            img (PIL.Image): input image as PIL.Image type
+            img (PIL.Image or np.ndarray): input image as PIL.Image or np.ndarray type
             type (str): output type option as below.
                         'rgba' will generate RGBA output regarding saliency score as an alpha map. 
                         'green' will change the background with green screen.
@@ -150,14 +165,24 @@ class Remover:
             PIL.Image: output image
 
         """
-        shape = img.size[::-1]
-        x = self.transform(img)
+
+        if isinstance(img, np.ndarray):
+            is_numpy = True
+            shape = img.shape[:2]
+            x = self.cv2_transform(image=img)["image"]
+        else:
+            is_numpy = False
+            shape = img.size[::-1]
+            x = self.transform(img)
+
+        print(x.shape)
+
         x = x.unsqueeze(0)
         x = x.to(self.device)
 
         with torch.no_grad():
             pred = self.model(x)
-
+            
         pred = F.interpolate(pred, shape, mode="bilinear", align_corners=True)
         pred = pred.data.cpu()
         pred = pred.numpy().squeeze()
@@ -220,7 +245,10 @@ class Remover:
                 1 - pred[..., np.newaxis]
             )
 
-        return Image.fromarray(img.astype(np.uint8))
+        if is_numpy:
+            return img.astype(np.uint8)
+        else:
+            return Image.fromarray(img.astype(np.uint8))
 
 
 def console():
