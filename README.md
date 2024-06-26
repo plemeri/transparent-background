@@ -41,11 +41,12 @@ package | version (>=)
 `pyvirtualcam` (optional) | `0.6.0`
 
 Note: If you have any problem with [`pyvirtualcam`](https://pypi.org/project/pyvirtualcam/), please visit their github repository or pypi homepage. Due to the backend workflow for Windows and macOS, we only support Linux for webcam input.
-### Dependencies (webcam input)
+### Dependencies
 
+#### 1. Webcam input
 We basically follow the virtual camera settings from [`pyvirtualcam`](https://pypi.org/project/pyvirtualcam/). If you do not choose to install virtual camera, it will visualize real-time output with `cv2.imshow`.
 
-#### A. Linux (v4l2loopback)
+##### A. Linux (v4l2loopback)
 
 ```bash
 # Install v4l2loopback for webcam relay
@@ -56,14 +57,13 @@ $ sudo depmod -a
 # Create virtual webcam
 $ sudo modprobe v4l2loopback devices=1
 ```
+* Note: If you have any problem with installing [`v4l2loopback`](https://github.com/umlaeute/v4l2loopback), please visit their github repository.
 
-Note: If you have any problem with installing [`v4l2loopback`](https://github.com/umlaeute/v4l2loopback), please visit their github repository.
-
-#### B. Windows (OBS)
+##### B. Windows (OBS)
 
 Install OBS virtual camera from [install OBS](https://obsproject.com/).
 
-#### C. macOS (OBS) [not stable]
+##### C. macOS (OBS) [not stable]
 
 Follow the steps below.
 * [Install OBS](https://obsproject.com/).
@@ -71,17 +71,34 @@ Follow the steps below.
 * Click "Start Virtual Camera" (bottom right), then "Stop Virtual Camera".
 * Close OBS.
 
-### Install `transperent-background`
+#### 2. File explorer for GUI
+##### A. Linux
+You need to install `zenity` to open files and directories on Linux
 ```bash
-# via pypi
-$ pip install transparent-background
-$ pip install transparent-background[webcam] # with webcam dependency 
+sudo apt install zenity
+```
 
-# via github
-$ pip install git+https://github.com/plemeri/transparent-background.git
+### Install `transperent-background`
+* Note: please specify `extra-index-url` as below if you want to use gpu, particularly on Windows.
+#### Install from `pypi`
+```bash
+pip install --extra-index-url https://download.pytorch.org/whl/cu118 transparent-background # install with official pytorch
+```
+  ##### With webcam support (not stable)
+  ```bash
+  pip install transparent-background[webcam] # with webcam dependency
+  ```
 
-# locally
-$ pip install .
+#### Install from github
+```bash
+pip install --extra-index-url https://download.pytorch.org/whl/cu118 git+https://github.com/plemeri/transparent-background.git
+```
+
+#### Install from local
+```bash
+git clone https://github.com/plemeri/transparent-background.git
+cd transparent-backbround
+pip --extra-index-url https://download.pytorch.org/whl/cu118 install .
 ```
 
 ### [New] Configuration
@@ -123,6 +140,13 @@ $ transparent-background --source test.png --mode custom
 ```
 
 ## :pencil2: Usage
+
+### :+1: GUI
+You can use gui with following command after installation.
+```bash
+transparent-background-gui
+```
+![image](https://github.com/plemeri/transparent-background/assets/40786892/eac55d75-eea7-438b-bb5c-dd05552a736a)
 
 ### :computer: Command Line
 
