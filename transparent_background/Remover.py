@@ -211,6 +211,7 @@ class Remover:
             img = img * pred[..., np.newaxis] + bg * (1 - pred[..., np.newaxis])
 
         elif len(type) == 3:
+            print(type)
             bg = np.stack([np.ones_like(pred)] * 3, axis=-1) * type
             img = img * pred[..., np.newaxis] + bg * (1 - pred[..., np.newaxis])
 
@@ -255,7 +256,7 @@ def to_base64(image):
     base64_img = base64.b64encode(buffered.getvalue()).decode("utf-8")
     return base64_img
 
-def entry_point(out_type, mode, device, ckpt, source, dest, jit, threshold, flet_progress=None, flet_page=None, preview=None, preview_out=None):
+def entry_point(out_type, mode, device, ckpt, source, dest, jit, threshold, flet_progress=None, flet_page=None, preview=None, preview_out=None, options=None):
     warnings.filterwarnings("ignore")
 
     remover = Remover(mode=mode, jit=jit, device=device, ckpt=ckpt)
@@ -312,7 +313,7 @@ def entry_point(out_type, mode, device, ckpt, source, dest, jit, threshold, flet
     if flet_progress is not None:
         assert flet_page is not None
         flet_progress.value = 0
-        flet_step = 1 / len(loader)
+        flet_step = 1 / frame_progress.total
 
     writer = None
 
@@ -339,6 +340,12 @@ def entry_point(out_type, mode, device, ckpt, source, dest, jit, threshold, flet
             if sample_progress is not None:
                 sample_progress.update()
 
+            if flet_progress is not None:
+                assert flet_page is not None
+                flet_progress.value = 0
+                flet_step = 1 / frame_progress.total
+                flet_progress.update()
+
         if _format == "Video" and img is None:
             if writer is not None:
                 writer.release()
@@ -362,14 +369,21 @@ def entry_point(out_type, mode, device, ckpt, source, dest, jit, threshold, flet
         frame_progress.update()
         if flet_progress is not None:
             flet_progress.value += flet_step
+            flet_progress.update()
 
-            preview.src_base64 = to_base64(img.resize((200, 200)).convert('RGB'))
-            preview_out.src_base64 = to_base64(out.resize((200, 200)).convert('RGB'))
+            if out_type == 'rgba':
+                o = np.array(out).astype(np.float64)
+                o[:, :, :3] *= (o[:, :, -1:] / 255)
+                out = Image.fromarray(o[:, :, :3].astype(np.uint8))
+
+            preview.src_base64 = to_base64(img.resize((480, 300)).convert('RGB'))
+            preview_out.src_base64 = to_base64(out.resize((480, 300)).convert('RGB'))
             preview.update()
             preview_out.update()
-        
-            flet_page.update()
 
+        if options is not None and options['abort']:
+            break
+        
     print("\nDone. Results are saved in {}".format(os.path.abspath(save_dir)))
 
 def console():

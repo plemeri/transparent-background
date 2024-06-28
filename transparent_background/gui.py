@@ -25,13 +25,14 @@ options = {
     'r' : 0, 
     'g' : 0, 
     'b' : 0,
-    'color' : [0, 0, 0],
+    'color' : "[0, 0, 0]",
     'ckpt':None,
     'threshold':None,
     'source':None,
     'dest':None,
     'use_custom':False,
-    'jit':False
+    'jit':False,
+    'abort':False,
 }
 
 def main(page):
@@ -67,7 +68,7 @@ def main(page):
         options['r'] = int(r_field.value) if len(r_field.value) > 0 and r_field.value.isdigit() else 0
         options['g'] = int(g_field.value) if len(g_field.value) > 0 and g_field.value.isdigit() else 0
         options['b'] = int(b_field.value) if len(b_field.value) > 0 and b_field.value.isdigit() else 0
-        options['color'] = [options['r'], options['g'], options['b']]
+        options['color'] = str([options['r'], options['g'], options['b']])
         output_text.value = 'Type: {}, Mode: {}, Device: {}'.format(options['output_type'], options['color'], options['device'])
         page.update()
 
@@ -98,10 +99,17 @@ def main(page):
         dest_path.update()
 
     def process(e):
-        entry_point(options['output_type'], options['mode'], options['device'], options['ckpt'], options['source'], options['dest'], options['jit'], options['threshold'], progress_ring, page, preview, preview_out)
+        output_type = options['output_type']
+        output_type = options['color'] if output_type == 'custom' else output_type
+        options['abort'] = False
+        entry_point(output_type, options['mode'], options['device'], options['ckpt'], options['source'], options['dest'], options['jit'], options['threshold'], progress_ring, page, preview, preview_out, options)
+
+    def click_abort(e):
+        options['abort'] = True
+        page.update()
 
     page.window_width = 1000
-    page.window_height = 600
+    page.window_height = 650
     page.window_resizable = False
 
     page.theme_mode = ft.ThemeMode.LIGHT
@@ -166,7 +174,7 @@ def main(page):
     page.add(
         ft.Row(
             [
-                ft.Image(src='figures/logo.png', width=100, height=100),
+                ft.Image(src=os.path.join(os.path.abspath(os.path.expanduser('~')), '.transparent-background', 'logo.png'), width=100, height=100),
                 ft.Column(
                     [
                         ft.Row([c, output_text]),
@@ -190,7 +198,8 @@ def main(page):
 
     # hide all dialogs in overlay
     page.overlay.extend([pick_files_dialog, get_directory_dialog, get_dest_dialog])
-    progress_ring = ft.ProgressRing(width=16, height=16, stroke_width = 2)
+    #progress_ring = ft.ProgressRing(width=16, height=16, stroke_width = 2)
+    progress_ring = ft.ProgressBar(width=200, color='amber', bgcolor='#eeeeee')
     progress_ring.value = 0
 
     preview = ft.Image(src=".preview.png", )
@@ -232,6 +241,12 @@ def main(page):
                     "Process",
                     icon=icons.SEND,
                     on_click=process,
+                    disabled=page.web,
+                ),
+                ElevatedButton(
+                    "Stop",
+                    icon=icons.STOP,
+                    on_click=click_abort,
                     disabled=page.web,
                 ),
                 progress_ring

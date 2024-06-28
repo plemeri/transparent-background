@@ -2,12 +2,15 @@ import os
 import shutil
 import setuptools
 
-with open("README.md", "r") as fh:
+with open("README.md", "r", encoding='utf-8') as fh:
     long_description = fh.read()
+
+os.makedirs(os.path.join(os.path.abspath(os.path.expanduser('~')), '.transparent-background'), exist_ok=True)
+shutil.copyfile('figures/logo.png', os.path.join(os.path.abspath(os.path.expanduser('~')), '.transparent-background', 'logo.png'))
 
 setuptools.setup(
     name="transparent-background",
-    version="1.2.13",
+    version="1.3.0",
     author="Taehun Kim",
     author_email="taehoon1018@postech.ac.kr",
     description="Make images with transparent background",
