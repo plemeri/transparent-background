@@ -1,5 +1,5 @@
 base:
-  url: "https://github.com/plemeri/transparent-background/releases/download/1.2.10/ckpt_base.pth"
+  url: "https://github.com/plemeri/transparent-background/releases/download/1.2.12/ckpt_base.pth"
   md5: "d692e3dd5fa1b9658949d452bebf1cda"
   ckpt_name: "ckpt_base.pth"
   http_proxy: NULL
@@ -7,14 +7,14 @@ base:
 
 
 fast:
-  url: "https://github.com/plemeri/transparent-background/releases/download/1.2.10/ckpt_fast.pth"
+  url: "https://github.com/plemeri/transparent-background/releases/download/1.2.12/ckpt_fast.pth"
   md5: "9efdbfbcc49b79ef0f7891c83d2fd52f"
   ckpt_name: "ckpt_fast.pth"
   http_proxy: NULL
   base_size: [384, 384]
 
 base-nightly:
-  url: "https://github.com/plemeri/transparent-background/releases/download/1.2.10/ckpt_base_nightly.pth"
+  url: "https://github.com/plemeri/transparent-background/releases/download/1.2.12/ckpt_base_nightly.pth"
   md5: NULL
   ckpt_name: "ckpt_base_nightly.pth"
   http_proxy: NULL
