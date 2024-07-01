@@ -10,7 +10,7 @@ shutil.copyfile('figures/logo.png', os.path.join(os.path.abspath(os.path.expandu
 
 setuptools.setup(
     name="transparent-background",
-    version="1.3.0",
+    version="1.3.1",
     author="Taehun Kim",
     author_email="taehoon1018@postech.ac.kr",
     description="Make images with transparent background",
