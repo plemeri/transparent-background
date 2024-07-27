@@ -18,7 +18,6 @@ import albumentations.pytorch as AP
 from PIL import Image
 from io import BytesIO
 from packaging import version
-from easydict import EasyDict
 
 filepath = os.path.abspath(__file__)
 repopath = os.path.split(filepath)[0]
@@ -266,7 +265,7 @@ def entry_point(out_type, mode, device, ckpt, source, dest, jit, threshold, flet
         _format = "Webcam"
         if importlib.util.find_spec('pyvirtualcam') is not None:
             try:
-                import pyvirtualcam
+                import pyvirtualcam # type: ignore
                 vcam = pyvirtualcam.Camera(width=640, height=480, fps=30)
             except:
                 vcam = None

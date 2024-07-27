@@ -3,7 +3,6 @@ import sys
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
 
 filepath = os.path.abspath(__file__)
 repopath = os.path.split(filepath)[0]

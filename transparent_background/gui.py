@@ -3,7 +3,6 @@ from flet import (
     ElevatedButton,
     FilePicker,
     FilePickerResultEvent,
-    Page,
     Row,
     Text,
     icons,
