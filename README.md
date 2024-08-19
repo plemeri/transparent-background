@@ -78,7 +78,7 @@ You need to install `zenity` to open files and directories on Linux
 sudo apt install zenity
 ```
 
-### Install `transperent-background`
+### Install `transparent-background`
 * Note: please specify `extra-index-url` as below if you want to use gpu, particularly on Windows.
 #### Install from `pypi`
 ```bash
@@ -89,7 +89,7 @@ pip install --extra-index-url https://download.pytorch.org/whl/cu118 transparent
   pip install transparent-background[webcam] # with webcam dependency
   ```
 
-#### Install from github
+#### Install from Github
 ```bash
 pip install --extra-index-url https://download.pytorch.org/whl/cu118 git+https://github.com/plemeri/transparent-background.git
 ```
@@ -117,8 +117,8 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 ### [New] Configuration
 
 `transparent-background` now supports external configuration rather than hard coded assets (e.g., checkpoint download url). 
-* The config file will be added in your home directory `~/.transparent-background/config.yaml`
-* You may change the `url` argument to your google drive download link. (Please note that only google drive is supported.)
+* The config file will be added in your home directory `~/.transparent-background/config.yaml` by default. The directory location can be customized by setting the desired file path under the environment variable `TRANSPARENT_BACKGROUND_FILE_PATH`.
+* You may change the `url` argument to your Google Drive download link. (Please note that only Google Drive is supported.)
 * You may change the `md5` argument to your file's md5 checksum. Or, set `md5` to `NULL` to skip verification.
 * You may add `http_proxy` argument to specify the proxy address as you need. If your internet connection is behind a HTTP proxy (e.g. `http://192.168.1.80:8080`), you can set this argument. (Contributed by [bombless](https://github.com/bombless))
 ```yaml
