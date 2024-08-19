@@ -101,6 +101,19 @@ cd transparent-backbround
 pip --extra-index-url https://download.pytorch.org/whl/cu118 install .
 ```
 
+#### Install CPU version only
+```bash
+# On Windows
+pip install transparent-background
+pip uninstall torch torchvision torchaudio
+pip install torch torchvision torchaudio
+
+# On Linux
+pip install transparent-background
+pip uninstall torch torchvision torchaudio
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+```
+
 ### [New] Configuration
 
 `transparent-background` now supports external configuration rather than hard coded assets (e.g., checkpoint download url). 
