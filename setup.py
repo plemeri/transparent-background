@@ -5,14 +5,12 @@ import setuptools
 with open("README.md", "r", encoding='utf-8') as fh:
     long_description = fh.read()
 
-
-file_path = os.environ.get('TRANSPARENT_BACKGROUND_FILE_PATH', os.path.abspath(os.path.expanduser('~')))
-os.makedirs(os.path.join(file_path, '.transparent-background'), exist_ok=True)
-shutil.copyfile('figures/logo.png', os.path.join(file_path, '.transparent-background', 'logo.png'))
+cfg_path = os.environ.get('TRANSPARENT_BACKGROUND_FILE_PATH', os.path.abspath(os.path.expanduser('~')))
+os.makedirs(os.path.join(cfg_path, '.transparent-background'), exist_ok=True)
 
 setuptools.setup(
     name="transparent-background",
-    version="1.3.1",
+    version="1.3.2",
     author="Taehun Kim",
     author_email="taehoon1018@postech.ac.kr",
     description="Make images with transparent background",

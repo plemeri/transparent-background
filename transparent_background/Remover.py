@@ -40,8 +40,8 @@ class Remover:
             ckpt   (str, optional): specifying model checkpoint. find downloaded checkpoint or try download if not specified.
             fast   (bool, optional, DEPRECATED): replaced by mode argument. use fast mode if True.
         """
-        file_path = os.environ.get('TRANSPARENT_BACKGROUND_FILE_PATH', os.path.abspath(os.path.expanduser('~')))
-        home_dir = os.path.join(file_path, ".transparent-background")
+        cfg_path = os.environ.get('TRANSPARENT_BACKGROUND_FILE_PATH', os.path.abspath(os.path.expanduser('~')))
+        home_dir = os.path.join(cfg_path, ".transparent-background")
         os.makedirs(home_dir, exist_ok=True)
 
         if not os.path.isfile(os.path.join(home_dir, "config.yaml")):

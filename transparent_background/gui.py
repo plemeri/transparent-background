@@ -12,8 +12,8 @@ import os
 import torch
 import logging
 
-from transparent_background.utils import get_backend
-from transparent_background.Remover import entry_point
+from transparent_background.utils import *
+from transparent_background.Remover import *
 
 logging.basicConfig(level=logging.WARN)
 logging.getLogger("flet_runtime").setLevel(logging.WARN)
@@ -35,6 +35,12 @@ options = {
     'abort':False,
 }
 
+def is_float(str):
+    try:
+        tmp = float(str)
+        return True
+    except ValueError:
+        return False
 
 def main(page):
     def theme_changed(e):
@@ -62,7 +68,7 @@ def main(page):
             options['use_custom']=False
             page.remove_at(1)
 
-        output_text.value = 'Type: {}, Mode: {}, Device: {}'.format(options['output_type'], options['mode'], options['device'])
+        output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}'.format(options['output_type'], options['mode'], options['device'], options['threshold'])
         page.update()
 
     def color_changed(e):
@@ -70,9 +76,15 @@ def main(page):
         options['g'] = int(g_field.value) if len(g_field.value) > 0 and g_field.value.isdigit() else 0
         options['b'] = int(b_field.value) if len(b_field.value) > 0 and b_field.value.isdigit() else 0
         options['color'] = str([options['r'], options['g'], options['b']])
-        output_text.value = 'Type: {}, Mode: {}, Device: {}'.format(options['output_type'], options['color'], options['device'])
+        output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}'.format(options['output_type'], options['color'], options['device'], options['threshold'])
         page.update()
 
+    def threshold_changed(e):
+        options['threshold'] = float(threshold_field.value) if len(threshold_field.value) > 0 and is_float(threshold_field.value) else None
+        options['threshold'] = None if is_float(options['threshold']) and (options['threshold'] < 0 or options['threshold'] > 1) else options['threshold']
+        output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}'.format(options['output_type'], options['mode'], options['device'], options['threshold'])
+        page.update()
+    
     def pick_files_result(e: FilePickerResultEvent):
         file_path.update()
         options['source'] = e.files[0].path if e.files else 'Not Selected'
@@ -115,7 +127,16 @@ def main(page):
     page.theme_mode = ft.ThemeMode.LIGHT
     c = ft.Switch(label="Dark mode", on_change=theme_changed)
 
-    output_text = ft.Text()
+    output_text = ft.Text(color=ft.colors.BLACK)
+    output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}'.format(options['output_type'], options['mode'], options['device'], options['threshold'])
+    output_text_container = ft.Container(
+                    content=output_text,
+                    margin=10,
+                    padding=10,
+                    bgcolor=ft.colors.GREEN_100,
+                    border_radius=10,
+                )
+
     jit_check = ft.Checkbox(label="use torchscript", value=False, on_change=checkbox_changed)
 
     type_dropdown = ft.Dropdown(
@@ -135,16 +156,18 @@ def main(page):
     )
     type_dropdown.value = options['output_type']
 
+    Remover() # init once
+
+    cfg_path = os.environ.get('TRANSPARENT_BACKGROUND_FILE_PATH', os.path.abspath(os.path.expanduser('~')))
+    home_dir = os.path.join(cfg_path, ".transparent-background")
+    configs = load_config(os.path.join(home_dir, "config.yaml"))
+
     mode_dropdown = ft.Dropdown(
         label='mode',
         width=150,
         hint_text='mode',
         on_change=dropdown_changed,
-        options=[
-            ft.dropdown.Option("base"),
-            ft.dropdown.Option("base-nightly"),
-            ft.dropdown.Option("fast"),
-        ],
+        options=[ft.dropdown.Option(key) for key in configs.keys()],
     )
     mode_dropdown.value = options['mode']
 
@@ -169,33 +192,46 @@ def main(page):
     g_field.value=str(options['g'])
     b_field.value=str(options['b'])
 
-    # ft.Image(src='figures/logo.png', width=100, height=100)
+    threshold_field = ft.TextField(width=100, label='threshold', on_change=threshold_changed)
+    threshold_field.value = 'None'
 
-    file_path = os.environ.get('TRANSPARENT_BACKGROUND_FILE_PATH', os.path.abspath(os.path.expanduser('~')))
     page.add(
         ft.Row(
             [
-                ft.Image(src=os.path.join(file_path, '.transparent-background', 'logo.png'), width=100, height=100),
+                ft.Image(src='https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/logo.png', width=100, height=100),
                 ft.Column(
                     [
-                        ft.Row([c, output_text]),
-                        ft.Row([type_dropdown, mode_dropdown, device_dropdown, jit_check])
+                        ft.Row([c, output_text_container]),
+                        ft.Row([type_dropdown, mode_dropdown, device_dropdown, threshold_field, jit_check])
                     ]
                 )
             ]
         )
     )
 
-    # page.add(ft.Row([c, output_text]))
-    # page.add(ft.Row([type_dropdown, mode_dropdown, device_dropdown, jit_check]))
-
     pick_files_dialog = FilePicker(on_result=pick_files_result)
 
     get_directory_dialog = FilePicker(on_result=get_directory_result)
-    file_path = Text()
+    file_path = Text(color=ft.colors.BLACK)
+    file_path.value = 'Input file or directory will be displayed'
+    file_path_container = ft.Container(
+                content=file_path,
+                margin=10,
+                padding=10,
+                bgcolor=ft.colors.AMBER,
+                border_radius=10,
+            )
 
     get_dest_dialog = FilePicker(on_result=get_dest_result)
-    dest_path = Text()
+    dest_path = Text(color=ft.colors.BLACK)
+    dest_path.value = 'Output file or directory will be displayed'
+    dest_path_container = ft.Container(
+            content=dest_path,
+            margin=10,
+            padding=10,
+            bgcolor=ft.colors.CYAN_200,
+            border_radius=10,
+        )
 
     # hide all dialogs in overlay
     page.overlay.extend([pick_files_dialog, get_directory_dialog, get_dest_dialog])
@@ -222,7 +258,7 @@ def main(page):
                     on_click=lambda _: get_directory_dialog.get_directory_path(),
                     disabled=page.web,
                 ),
-                file_path,
+                file_path_container,
             ]
         ),
         Row(
@@ -233,7 +269,7 @@ def main(page):
                     on_click=lambda _: get_dest_dialog.get_directory_path(),
                     disabled=page.web,
                 ),
-                dest_path
+                dest_path_container
             ]
         ),
         Row(
