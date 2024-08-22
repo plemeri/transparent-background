@@ -5,8 +5,10 @@ import setuptools
 with open("README.md", "r", encoding='utf-8') as fh:
     long_description = fh.read()
 
-os.makedirs(os.path.join(os.path.abspath(os.path.expanduser('~')), '.transparent-background'), exist_ok=True)
-shutil.copyfile('figures/logo.png', os.path.join(os.path.abspath(os.path.expanduser('~')), '.transparent-background', 'logo.png'))
+
+file_path = os.environ.get('TRANSPARENT_BACKGROUND_FILE_PATH', os.path.abspath(os.path.expanduser('~')))
+os.makedirs(os.path.join(file_path, '.transparent-background'), exist_ok=True)
+shutil.copyfile('figures/logo.png', os.path.join(file_path, '.transparent-background', 'logo.png'))
 
 setuptools.setup(
     name="transparent-background",

@@ -35,6 +35,7 @@ options = {
     'abort':False,
 }
 
+
 def main(page):
     def theme_changed(e):
         page.theme_mode = (
@@ -71,7 +72,6 @@ def main(page):
         options['color'] = str([options['r'], options['g'], options['b']])
         output_text.value = 'Type: {}, Mode: {}, Device: {}'.format(options['output_type'], options['color'], options['device'])
         page.update()
-
 
     def pick_files_result(e: FilePickerResultEvent):
         file_path.update()
@@ -133,8 +133,8 @@ def main(page):
             ft.dropdown.Option("custom"),
         ],
     )
-    type_dropdown.value=options['output_type']
-    
+    type_dropdown.value = options['output_type']
+
     mode_dropdown = ft.Dropdown(
         label='mode',
         width=150,
@@ -168,13 +168,14 @@ def main(page):
     r_field.value=str(options['r'])
     g_field.value=str(options['g'])
     b_field.value=str(options['b'])
-    
+
     # ft.Image(src='figures/logo.png', width=100, height=100)
 
+    file_path = os.environ.get('TRANSPARENT_BACKGROUND_FILE_PATH', os.path.abspath(os.path.expanduser('~')))
     page.add(
         ft.Row(
             [
-                ft.Image(src=os.path.join(os.path.abspath(os.path.expanduser('~')), '.transparent-background', 'logo.png'), width=100, height=100),
+                ft.Image(src=os.path.join(file_path, '.transparent-background', 'logo.png'), width=100, height=100),
                 ft.Column(
                     [
                         ft.Row([c, output_text]),
@@ -263,6 +264,7 @@ def main(page):
         )
     )
 
+
 def gui():
     ft.app(target=main)
 
@@ -271,6 +273,7 @@ def gui():
 
     if os.path.isfile('.preview_out.png'):
         os.remove('.preview_out.png')
+
 
 if __name__ == "__main__":
     gui()
