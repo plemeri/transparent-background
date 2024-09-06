@@ -25,6 +25,9 @@ Image | Video | Webcam
 * [2023.10.19] Webcam support is not stable currently. We remove the dependency for the latest release. Install with extra dependency option `pip install transparent-background[webcam]` if you want to use webcam input.
 * [2024.02.14] I added a [github sponsor badge](https://github.com/sponsors/plemeri). Please help maintaining this project if you think this package is useful!
 * [2024.08.22] [ComfyUI-Inspyrenet-Rembg](https://github.com/john-mnz/ComfyUI-Inspyrenet-Rembg) is implemented by [john-mnz](https://github.com/john-mnz). Thank you for sharing great work!
+* [2024.09.06] `transparent-background` total download counts reached 500,000 and ranked 5969 on [🏆top=pypi-package](https://hugovk.github.io/top-pypi-packages/). Thank you all for your huge support!
+<img src=https://github.com/user-attachments/assets/5252be1c-338c-4340-a6a5-5c421a1bf550 width=400px>
+
 
 ## :inbox_tray: Installation
 
