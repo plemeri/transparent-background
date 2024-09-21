@@ -102,7 +102,7 @@ pip install --extra-index-url https://download.pytorch.org/whl/cu118 git+https:/
 ```bash
 git clone https://github.com/plemeri/transparent-background.git
 cd transparent-backbround
-pip --extra-index-url https://download.pytorch.org/whl/cu118 install .
+pip install --extra-index-url https://download.pytorch.org/whl/cu118 .
 ```
 
 #### Install CPU version only
