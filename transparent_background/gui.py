@@ -28,6 +28,9 @@ options = {
     'color' : "[0, 0, 0]",
     'ckpt':None,
     'threshold':None,
+    'reverse': False,
+    'resize': 'static',
+    'format': None,
     'source':None,
     'dest':None,
     'use_custom':False,
@@ -36,6 +39,8 @@ options = {
 }
 
 def is_float(str):
+    if str is None:
+        return False
     try:
         tmp = float(str)
         return True
@@ -53,12 +58,15 @@ def main(page):
 
     def checkbox_changed(e):
         options['jit'] = jit_check.value
+        options['reverse'] = reverse_check.value
         page.update()
 
     def dropdown_changed(e):
         options['output_type'] = type_dropdown.value
         options['mode'] = mode_dropdown.value
         options['device'] = device_dropdown.value
+        options['resize'] = resize_dropdown.value
+        # options['format'] = format_dropdown.value
 
         if options['output_type'] == 'custom' and not options['use_custom']:
             page.insert(1, ft.Row([r_field, g_field, b_field]))
@@ -68,7 +76,7 @@ def main(page):
             options['use_custom']=False
             page.remove_at(1)
 
-        output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}'.format(options['output_type'], options['mode'], options['device'], options['threshold'])
+        output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}, Resize: {}, Format: {}'.format(options['output_type'], options['mode'], options['device'], options['threshold'], options['resize'], options['format'])
         page.update()
 
     def color_changed(e):
@@ -76,15 +84,20 @@ def main(page):
         options['g'] = int(g_field.value) if len(g_field.value) > 0 and g_field.value.isdigit() else 0
         options['b'] = int(b_field.value) if len(b_field.value) > 0 and b_field.value.isdigit() else 0
         options['color'] = str([options['r'], options['g'], options['b']])
-        output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}'.format(options['output_type'], options['color'], options['device'], options['threshold'])
+        output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}, Resize: {}, Format: {}'.format(options['output_type'], options['color'], options['device'], options['threshold'], options['resize'], options['format'])
         page.update()
 
     def threshold_changed(e):
         options['threshold'] = float(threshold_field.value) if len(threshold_field.value) > 0 and is_float(threshold_field.value) else None
         options['threshold'] = None if is_float(options['threshold']) and (options['threshold'] < 0 or options['threshold'] > 1) else options['threshold']
-        output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}'.format(options['output_type'], options['mode'], options['device'], options['threshold'])
+        output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}, Resize: {}, Format: {}'.format(options['output_type'], options['mode'], options['device'], options['threshold'], options['resize'], options['format'])
         page.update()
     
+    def format_changed(e):
+        options['format'] = format_field.value if format_field.value.endswith(IMG_EXTS) or format_field.value.endswith(VID_EXTS) else None
+        output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}, Resize: {}, Format: {}'.format(options['output_type'], options['mode'], options['device'], options['threshold'], options['resize'], options['format'])
+        page.update()
+
     def pick_files_result(e: FilePickerResultEvent):
         file_path.update()
         options['source'] = e.files[0].path if e.files else 'Not Selected'
@@ -114,7 +127,7 @@ def main(page):
         output_type = options['output_type']
         output_type = options['color'] if output_type == 'custom' else output_type
         options['abort'] = False
-        entry_point(output_type, options['mode'], options['device'], options['ckpt'], options['source'], options['dest'], options['jit'], options['threshold'], progress_ring, page, preview, preview_out, options)
+        entry_point(output_type, options['mode'], options['device'], options['ckpt'], options['source'], options['dest'], options['jit'], options['threshold'], options['resize'], options['format'], options['reverse'], progress_ring, page, preview, preview_out, options)
 
     def click_abort(e):
         options['abort'] = True
@@ -128,7 +141,7 @@ def main(page):
     c = ft.Switch(label="Dark mode", on_change=theme_changed)
 
     output_text = ft.Text(color=ft.colors.BLACK)
-    output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}'.format(options['output_type'], options['mode'], options['device'], options['threshold'])
+    output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}, Resize: {}, Format: {}'.format(options['output_type'], options['mode'], options['device'], options['threshold'], options['resize'], options['format'])
     output_text_container = ft.Container(
                     content=output_text,
                     margin=10,
@@ -138,6 +151,7 @@ def main(page):
                 )
 
     jit_check = ft.Checkbox(label="use torchscript", value=False, on_change=checkbox_changed)
+    reverse_check = ft.Checkbox(label="reverse", value=False, on_change=checkbox_changed)
 
     type_dropdown = ft.Dropdown(
         label='type',
@@ -155,6 +169,18 @@ def main(page):
         ],
     )
     type_dropdown.value = options['output_type']
+
+    resize_dropdown = ft.Dropdown(
+        label='resize',
+        width=200,
+        hint_text='resize method',
+        on_change=dropdown_changed,
+        options=[
+            ft.dropdown.Option("static"),
+            ft.dropdown.Option("dynamic"),
+        ],
+    )
+    resize_dropdown.value = options['resize']
 
     Remover() # init once
 
@@ -192,8 +218,11 @@ def main(page):
     g_field.value=str(options['g'])
     b_field.value=str(options['b'])
 
-    threshold_field = ft.TextField(width=100, label='threshold', on_change=threshold_changed)
-    threshold_field.value = 'None'
+    threshold_field = ft.TextField(width=150, label='threshold', on_change=threshold_changed)
+    threshold_field.value = None
+
+    format_field = ft.TextField(width=100, label='format', on_change=format_changed)
+    format_field.value = None
 
     page.add(
         ft.Row(
@@ -201,8 +230,8 @@ def main(page):
                 ft.Image(src='https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/logo.png', width=100, height=100),
                 ft.Column(
                     [
-                        ft.Row([c, output_text_container]),
-                        ft.Row([type_dropdown, mode_dropdown, device_dropdown, threshold_field, jit_check])
+                        ft.Row([c, jit_check, reverse_check, output_text_container]),
+                        ft.Row([type_dropdown, mode_dropdown, device_dropdown, resize_dropdown, threshold_field, format_field])
                     ]
                 )
             ]

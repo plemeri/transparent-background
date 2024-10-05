@@ -12,7 +12,7 @@ os.makedirs(os.path.join(cfg_path, ".transparent-background"), exist_ok=True)
 
 setuptools.setup(
     name="transparent-background",
-    version="1.3.2",
+    version="1.3.3",
     author="Taehun Kim",
     author_email="taehoon1018@postech.ac.kr",
     description="Make images with transparent background",

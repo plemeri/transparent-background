@@ -15,17 +15,22 @@ from PIL import Image
 from threading import Thread
 from easydict import EasyDict
 
+VID_EXTS = ('mp4', 'avi', 'h264', 'mkv', 'mov', 'flv', 'wmv', 'webm', 'ts', 'm4v', 'vob', '3gp', '3g2', 'rm', 'rmvb', 'ogv', 'ogg', 'drc', 'gif', 'gifv', 'mng', 'avi', 'mov', 'qt', 'wmv', 'yuv', 'rm', 'rmvb', 'asf', 'amv', 'mp4', 'm4p', 'm4v', 'mpg', 'mp2', 'mpeg', 'mpe', 'mpv', 'mpg', 'mpeg', 'm2v', 'm4v', 'svi', '3gp', '3g2', 'mxf', 'roq', 'nsv', 'flv', 'f4v', 'f4p', 'f4a', 'f4b')
+IMG_EXTS = ('jpg', 'jpeg', 'bmp', 'png', 'ppm', 'pgm', 'pbm', 'pnm', 'webp', 'sr', 'ras', 'tiff', 'tif', 'exr', 'hdr', 'pic', 'dib', 'jpe', 'jp2', 'j2k', 'jpf', 'jpx', 'jpm', 'mj2', 'jxr', 'hdp', 'wdp', 'cur', 'ico', 'ani', 'icns', 'bpg', 'jp2', 'j2k', 'jpf', 'jpx', 'jpm', 'mj2', 'jxr', 'hdp', 'wdp', 'cur', 'ico', 'ani', 'icns', 'bpg')
+
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--source',    '-s',  type=str,                 help="Path to the source. Single image, video, directory of images, directory of videos is supported.")
-    parser.add_argument('--dest',      '-d',  type=str, default=None,   help="Path to destination. Results will be stored in current directory if not specified.")
-    parser.add_argument('--type',      '-t',  type=str, default='rgba', help="Specify output type. If not specified, output results will make the background transparent. Please refer to the documentation for other types.")
-    parser.add_argument('--fast',      '-f',  action='store_true',      help="(Deprecated) Speed up inference speed by using small scale, but decreases output quality.")
-    parser.add_argument('--jit',       '-j',  action='store_true',      help="Speed up inference speed by using torchscript, but decreases output quality.")
-    parser.add_argument('--device',    '-D',  type=str, default=None,   help="Designate device. If not specified, it will find available device.")
-    parser.add_argument('--mode',      '-m',  type=str, default='base', help="choose between base and fast mode. Also, use base-nightly for nightly release checkpoint.")
-    parser.add_argument('--ckpt',      '-c',  type=str, default=None,   help="Designate checkpoint. If not specified, it will download or load pre-downloaded default checkpoint.")
-    parser.add_argument('--threshold', '-th', type=str, default=None,   help="Designate threshold. If specified, it will output hard prediction above threshold. If not specified, it will output soft prediction.")
+    parser.add_argument('--source',    '-s',  type=str,                   help="Path to the source. Single image, video, directory of images, directory of videos is supported.")
+    parser.add_argument('--dest',      '-d',  type=str, default=None,     help="Path to destination. Results will be stored in current directory if not specified.")
+    parser.add_argument('--type',      '-t',  type=str, default='rgba',   help="Specify output type. If not specified, output results will make the background transparent. Please refer to the documentation for other types.")
+    parser.add_argument('--reverse',  '-R',  action='store_true',        help="Output will be reverse and foreground will be removed instead of background if specified.")
+    parser.add_argument('--format',    '-f',  type=str, default=None,     help="Specify output format. If not specified, it will be saved with the format of input.")
+    parser.add_argument('--resize',    '-r',  type=str, default='static', help="Specify resizing method. If not specified, static resize will be used. Choose from (static|dynamic).")
+    parser.add_argument('--jit',       '-j',  action='store_true',        help="Speed up inference speed by using torchscript, but decreases output quality.")
+    parser.add_argument('--device',    '-D',  type=str, default=None,     help="Designate device. If not specified, it will find available device.")
+    parser.add_argument('--mode',      '-m',  type=str, default='base',   help="choose between base and fast mode. Also, use base-nightly for nightly release checkpoint.")
+    parser.add_argument('--ckpt',      '-c',  type=str, default=None,     help="Designate checkpoint. If not specified, it will download or load pre-downloaded default checkpoint.")
+    parser.add_argument('--threshold', '-th', type=str, default=None,     help="Designate threshold. If specified, it will output hard prediction above threshold. If not specified, it will output soft prediction.")
     return parser.parse_args()
 
 def get_backend():
@@ -43,8 +48,8 @@ def load_config(config_dir, easy=True):
     return cfg
 
 def get_format(source):
-    img_count = len([i for i in source if i.lower().endswith(('.jpg', '.png', '.jpeg'))])
-    vid_count = len([i for i in source if i.lower().endswith(('.mp4', '.avi', '.mov' ))])
+    img_count = len([i for i in source if i.lower().endswith(IMG_EXTS)])
+    vid_count = len([i for i in source if i.lower().endswith(VID_EXTS)])
     
     if img_count * vid_count != 0:
         return ''

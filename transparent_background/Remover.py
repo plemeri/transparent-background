@@ -28,7 +28,7 @@ from transparent_background.InSPyReNet import InSPyReNet_SwinB
 from transparent_background.utils import *
 
 class Remover:
-    def __init__(self, mode="base", jit=False, device=None, ckpt=None, fast=None):
+    def __init__(self, mode="base", jit=False, device=None, ckpt=None, resize='static'):
         """
         Args:
             mode   (str): Choose among below options
@@ -47,11 +47,6 @@ class Remover:
         if not os.path.isfile(os.path.join(home_dir, "config.yaml")):
             shutil.copy(os.path.join(repopath, "config.yaml"), os.path.join(home_dir, "config.yaml"))
         self.meta = load_config(os.path.join(home_dir, "config.yaml"))[mode]
-
-        if fast is not None:
-            warnings.warn("fast argument is deprecated. use mode argument instead.")
-            if fast:
-                mode = "fast"
 
         if device is not None:
             self.device = device
@@ -118,14 +113,26 @@ class Remover:
                 del self.model
                 self.model = traced_model
                 torch.jit.save(self.model, os.path.join(ckpt_dir, ckpt_name))
+            if resize != 'static':
+                warnings.warn('Resizing method for TorchScript mode only supports static resize. Fallback to static.')
+                resize = 'static'
+
+        resize_tf = None
+        resize_fn = None
+        if resize == 'static':
+            resize_tf = static_resize(self.meta.base_size)
+            resize_fn = A.Resize(*self.meta.base_size)
+        elif resize == 'dynamic':
+            if 'base' not in mode:
+                warnings.warn('Dynamic resizing only supports base and base-nightly mode. It will cause severe performance degradation with fast mode.')
+            resize_tf = dynamic_resize(L=1280)
+            resize_fn = dynamic_resize_a(L=1280)
+        else:
+            raise AttributeError(f'Unsupported resizing method {resize}')
 
         self.transform = transforms.Compose(
             [
-                static_resize(self.meta.base_size)
-                if jit
-                else static_resize(size=[384, 384])
-                if 'fast' in mode
-                else dynamic_resize(L=1280),
+                resize_tf,
                 tonumpy(),
                 normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
                 totensor(),
@@ -134,11 +141,7 @@ class Remover:
 
         self.cv2_transform = A.Compose(
             [
-                A.Resize(*self.meta.base_size)
-                if jit
-                else A.Resize(384, 384)
-                if 'fast' in mode
-                else dynamic_resize_a(L=1280),
+                resize_fn,
                 A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
                 AP.ToTensorV2(),
             ]
@@ -150,7 +153,7 @@ class Remover:
         )
         print("Settings -> {}".format(desc))
 
-    def process(self, img, type="rgba", threshold=None):
+    def process(self, img, type="rgba", threshold=None, reverse=False):
         """
         Args:
             img (PIL.Image or np.ndarray): input image as PIL.Image or np.ndarray type
@@ -189,6 +192,8 @@ class Remover:
 
         if threshold is not None:
             pred = (pred > float(threshold)).astype(np.float64)
+        if reverse:
+            pred = 1 - pred
 
         img = np.array(img)
 
@@ -229,7 +234,7 @@ class Remover:
             border = cv2.Canny(((pred > 0.5) * 255).astype(np.uint8), 50, 100)
             img[border != 0] = [120, 255, 155]
 
-        elif type.lower().endswith((".jpg", ".jpeg", ".png")):
+        elif type.lower().endswith(IMG_EXTS):
             if self.background['name'] != type:
                 background_img = cv2.cvtColor(cv2.imread(type), cv2.COLOR_BGR2RGB)
                 background_img = cv2.resize(background_img, img.shape[:2][::-1])
@@ -257,10 +262,10 @@ def to_base64(image):
     base64_img = base64.b64encode(buffered.getvalue()).decode("utf-8")
     return base64_img
 
-def entry_point(out_type, mode, device, ckpt, source, dest, jit, threshold, flet_progress=None, flet_page=None, preview=None, preview_out=None, options=None):
+def entry_point(out_type, mode, device, ckpt, source, dest, jit, threshold, resize, save_format=None, reverse=False, flet_progress=None, flet_page=None, preview=None, preview_out=None, options=None):
     warnings.filterwarnings("ignore")
 
-    remover = Remover(mode=mode, jit=jit, device=device, ckpt=ckpt)
+    remover = Remover(mode=mode, jit=jit, device=device, ckpt=ckpt, resize=resize)
 
     if source.isnumeric() is True:
         save_dir = None
@@ -319,22 +324,29 @@ def entry_point(out_type, mode, device, ckpt, source, dest, jit, threshold, flet
     writer = None
 
     for img, name in loader:
+        filename, ext = os.path.splitext(name)
+        ext = ext[1:]
+        ext = save_format if save_format is not None else ext
         frame_progress.set_description("{}".format(name))
-        if out_type.lower().endswith((".jpg", ".jpeg", ".png")):
+        if out_type.lower().endswith(IMG_EXTS):
             outname = "{}_{}".format(
-                os.path.splitext(name)[0],
+                filename,
                 os.path.splitext(os.path.split(out_type)[-1])[0],
             )
         else:
-            outname = "{}_{}".format(os.path.splitext(name)[0], out_type)
+            outname = "{}_{}".format(filename, out_type)
+
+        if reverse:
+            outname += '_reverse'
 
         if _format == "Video" and writer is None:
             writer = cv2.VideoWriter(
-                os.path.join(save_dir, "{}.mp4".format(outname)),
+                os.path.join(save_dir, f"{outname}.{ext}"),
                 cv2.VideoWriter_fourcc(*"mp4v"),
                 loader.fps,
                 img.size,
             )
+            writer.set(cv2.VIDEOWRITER_PROP_QUALITY, 100)
             frame_progress.refresh()
             frame_progress.reset()
             frame_progress.total = int(loader.cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -353,10 +365,13 @@ def entry_point(out_type, mode, device, ckpt, source, dest, jit, threshold, flet
             writer = None
             continue
 
-        out = remover.process(img, type=out_type, threshold=threshold)
+        out = remover.process(img, type=out_type, threshold=threshold, reverse=reverse)
 
         if _format == "Image":
-            out.save(os.path.join(save_dir, "{}.png".format(outname)))
+            if out_type == "rgba" and ext.lower() != 'png':
+                warnings.warn('Output format for rgba mode only supports png format. Fallback to png output.')
+                ext = 'png'
+            out.save(os.path.join(save_dir, f"{outname}.{ext}"))
         elif _format == "Video" and writer is not None:
             writer.write(cv2.cvtColor(np.array(out), cv2.COLOR_BGR2RGB))
         elif _format == "Webcam":
@@ -389,4 +404,4 @@ def entry_point(out_type, mode, device, ckpt, source, dest, jit, threshold, flet
 
 def console():
     args = parse_args()
-    entry_point(args.type, args.mode, args.device, args.ckpt, args.source, args.dest, args.jit, args.threshold)
+    entry_point(args.type, args.mode, args.device, args.ckpt, args.source, args.dest, args.jit, args.threshold, args.resize, args.format, args.reverse)

@@ -27,6 +27,7 @@ Image | Video | Webcam
 * [2024.08.22] [ComfyUI-Inspyrenet-Rembg](https://github.com/john-mnz/ComfyUI-Inspyrenet-Rembg) is implemented by [john-mnz](https://github.com/john-mnz). Thank you for sharing great work!
 * [2024.09.06] `transparent-background` total download counts reached 500,000 and ranked 5969 on [🏆top=pypi-package](https://hugovk.github.io/top-pypi-packages/). Thank you all for your huge support!
 <img src=https://github.com/user-attachments/assets/5252be1c-338c-4340-a6a5-5c421a1bf550 width=400px>
+* [2024.10.05] `--format`, `--resize` and `--reverse` options are implemented.
 
 
 ## :inbox_tray: Installation
@@ -170,7 +171,7 @@ transparent-background-gui
 ```bash
 # for apple silicon mps backend, use "PYTORCH_ENABLE_MPS_FALLBACK=1" before the command (requires torch >= 1.13)
 $ transparent-background --source [SOURCE]
-$ transparent-background --source [SOURCE] --dest [DEST] --threshold [THRESHOLD] --type [TYPE] --ckpt [CKPT] --mode [MODE]  (--fast) (--jit)
+$ transparent-background --source [SOURCE] --dest [DEST] --threshold [THRESHOLD] --type [TYPE] --ckpt [CKPT] --mode [MODE] --resize [RESIZE] --format [FORMAT] (--reverse) (--jit)
 ```
 * `--source [SOURCE]`: Specify your data in this argument.
     * Single image - `image.png`
@@ -190,8 +191,10 @@ $ transparent-background --source [SOURCE] --dest [DEST] --threshold [THRESHOLD]
     * `overlay` will cover the salient object with translucent green color, and highlight the edges.
     * Another image file (e.g., `samples/backgroud.png`) will be used as a background, and the object will be overlapped on it.
 * `--ckpt [CKPT]` (optional): Use other checkpoint file. Default is trained with composite dataset and will be automatically downloaded if not available. Please refer to [Model Zoo](https://github.com/plemeri/InSPyReNet/blob/main/docs/model_zoo.md) from [InSPyReNet](https://github.com/plemeri/InSPyReNet) for available pre-trained checkpoints.
-* `--mode [MODE]` (optional): choose between `base` and `fast` mode. Also, use `base-nightly` for nightly release checkpoint. Replacing `--fast` argument.
-* `--fast` (optional, **deprecated, will be removed future release**): Fast mode. If specified, it will use low-resolution input and model trained with LR scale. May decrease performance but reduces inference time and gpu memory usage. 
+* `--mode [MODE]` (optional): Choose from `base`, `base-nightly` and `fast` mode. Use `base-nightly` for nightly release checkpoint.
+* `--resize [RESIZE]` (optional): Choose between `static` and `dynamic`. Dynamic will produce better results in terms of sharper edges but maybe unstable. Default is `static`
+* `--format [FORMAT]` (optional): Specify output format. If not specified, the output format will be identical to the input format.
+* `--reverse` (optional): Reversing result. In other words, foreground will be removed instead of background. This will make our package's name `transparent-foreground`! :laughing:
 * `--jit` (optional): Torchscript mode. If specified, it will trace model with pytorch built-in torchscript JIT compiler. May cause delay in initialization, but reduces inference time and gpu memory usage.
     
 ### :crystal_ball: Python API
