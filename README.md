@@ -17,6 +17,9 @@ Image | Video | Webcam
 :-:|:-:|:-:
 <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_aeroplane.gif height=200px> | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_b5.gif height=200px> | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_webcam.gif height=200px>
 
+## :rotating_light: Notice
+* `--jit` option, also known as TorchScript option is widely used recently for disabling dynamic resizing for stable output. Since it wasn't mean to be used in this way, I added `--format` option. For those who used `--jit` option because of the stability, you don't have to specify anymore.
+
 ## :newspaper: News
 
 * Our package is currently not working properly on small images without `--fast` argument. Sorry for the inconvenience and we'll fix this issue with better algorithm coming out shortly.
@@ -27,7 +30,8 @@ Image | Video | Webcam
 * [2024.08.22] [ComfyUI-Inspyrenet-Rembg](https://github.com/john-mnz/ComfyUI-Inspyrenet-Rembg) is implemented by [john-mnz](https://github.com/john-mnz). Thank you for sharing great work!
 * [2024.09.06] `transparent-background` total download counts reached 500,000 and ranked 5969 on [🏆top=pypi-package](https://hugovk.github.io/top-pypi-packages/). Thank you all for your huge support!
 <img src=https://github.com/user-attachments/assets/5252be1c-338c-4340-a6a5-5c421a1bf550 width=400px>
-* [2024.10.05] `--format`, `--resize` and `--reverse` options are implemented.
+
+* [2024.10.05] `--format`, `--resize` and `--reverse` options are implemented. See Command Line and Usage sections for more details.
 
 
 ## :inbox_tray: Installation
@@ -164,7 +168,7 @@ You can use gui with following command after installation.
 ```bash
 transparent-background-gui
 ```
-![image](https://github.com/plemeri/transparent-background/assets/40786892/eac55d75-eea7-438b-bb5c-dd05552a736a)
+![Screenshot 2024-10-05 194115](https://github.com/user-attachments/assets/50aaa2e1-b6f3-4dda-8e05-06f13456212a)
 
 ### :computer: Command Line
 
@@ -192,9 +196,9 @@ $ transparent-background --source [SOURCE] --dest [DEST] --threshold [THRESHOLD]
     * Another image file (e.g., `samples/backgroud.png`) will be used as a background, and the object will be overlapped on it.
 * `--ckpt [CKPT]` (optional): Use other checkpoint file. Default is trained with composite dataset and will be automatically downloaded if not available. Please refer to [Model Zoo](https://github.com/plemeri/InSPyReNet/blob/main/docs/model_zoo.md) from [InSPyReNet](https://github.com/plemeri/InSPyReNet) for available pre-trained checkpoints.
 * `--mode [MODE]` (optional): Choose from `base`, `base-nightly` and `fast` mode. Use `base-nightly` for nightly release checkpoint.
-* `--resize [RESIZE]` (optional): Choose between `static` and `dynamic`. Dynamic will produce better results in terms of sharper edges but maybe unstable. Default is `static`
-* `--format [FORMAT]` (optional): Specify output format. If not specified, the output format will be identical to the input format.
-* `--reverse` (optional): Reversing result. In other words, foreground will be removed instead of background. This will make our package's name `transparent-foreground`! :laughing:
+* :star: `--resize [RESIZE]` (optional): Choose between `static` and `dynamic`. Dynamic will produce better results in terms of sharper edges but maybe unstable. Default is `static`
+* :star: `--format [FORMAT]` (optional): Specify output format. If not specified, the output format will be identical to the input format.
+* :star: `--reverse` (optional): Reversing result. In other words, foreground will be removed instead of background. This will make our package's name `transparent-foreground`! :laughing:
 * `--jit` (optional): Torchscript mode. If specified, it will trace model with pytorch built-in torchscript JIT compiler. May cause delay in initialization, but reduces inference time and gpu memory usage.
     
 ### :crystal_ball: Python API
@@ -210,6 +214,7 @@ from transparent_background import Remover
 remover = Remover() # default setting
 remover = Remover(mode='fast', jit=True, device='cuda:0', ckpt='~/latest.pth') # custom setting
 remover = Remover(mode='base-nightly') # nightly release checkpoint
+remover = Remover(resize='dynamic') # use dynamic resizing instead of static resizing
 
 # Usage for image
 img = Image.open('samples/aeroplane.jpg').convert('RGB') # read image
@@ -225,8 +230,10 @@ out = remover.process(img, type='overlay') # overlay object map onto the image
 out = remover.process(img, type='samples/background.jpg') # use another image as a background
 
 out = remover.process(img, threshold=0.5) # use threhold parameter for hard prediction.
+out = remover.process(img, reverse=True) # reverse output. background -> foreground
 
 out.save('output.png') # save result
+out.save('output.jpg') # save as jpg
 
 # Usage for video
 cap = cv2.VideoCapture('samples/b5.mp4') # video reader for input
