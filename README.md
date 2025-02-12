@@ -11,9 +11,9 @@
 </p>
 
 <p align="center">
-    <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fplemeri%2Fplemeri%2Frefs%2Fheads%2Fmain%2Frank.json&query=latest-rank&style=flat&logo=pypi&label=PyPI%20Monthly%20Ranking&labelColor=black">
-    <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fplemeri%2Fplemeri%2Frefs%2Fheads%2Fmain%2Frank.json&query=latest-downloads&style=flat&logo=pypi&label=PyPI%20Monthly%20Downloads&labelColor=black">
-    <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fplemeri%2Fplemeri%2Frefs%2Fheads%2Fmain%2Frank.json&query=all-time-highest-rank&style=flat&logo=pypi&label=PyPI%20Highest%20Ranking%20&labelColor=black&color=red">
+    <a href="https://hugovk.github.io/top-pypi-packages/"><img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fplemeri%2Fplemeri%2Frefs%2Fheads%2Fmain%2Frank.json&query=latest-rank&style=flat&logo=pypi&label=PyPI%20Monthly%20Ranking&labelColor=black">
+    <a href="https://hugovk.github.io/top-pypi-packages/"><img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fplemeri%2Fplemeri%2Frefs%2Fheads%2Fmain%2Frank.json&query=latest-downloads&style=flat&logo=pypi&label=PyPI%20Monthly%20Downloads&labelColor=black">
+    <a href="https://hugovk.github.io/top-pypi-packages/"><img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fplemeri%2Fplemeri%2Frefs%2Fheads%2Fmain%2Frank.json&query=all-time-highest-rank&style=flat&logo=pypi&label=PyPI%20Highest%20Ranking%20&labelColor=black&color=red">
 </p>
 
 
