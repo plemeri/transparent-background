@@ -51,7 +51,7 @@ package | version (>=)
 `pytorch`       | `1.7.1`
 `torchvision`   | `0.8.2`
 `opencv-python` | `4.6.0.66`
-`timm`          | `0.6.11`
+`timm`          | `1.0.3`
 `tqdm`          | `4.64.1`
 `kornia`        | `0.5.4`
 `gdown`         | `4.5.4`
