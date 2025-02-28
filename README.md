@@ -114,7 +114,7 @@ pip install --extra-index-url https://download.pytorch.org/whl/cu118 git+https:/
 #### Install from local
 ```bash
 git clone https://github.com/plemeri/transparent-background.git
-cd transparent-backbround
+cd transparent-background
 pip install --extra-index-url https://download.pytorch.org/whl/cu118 .
 ```
 
