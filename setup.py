@@ -45,6 +45,7 @@ setuptools.setup(
         # TODO: remove pin of albucore once this bug is fixed https://github.com/albumentations-team/albumentations/issues/1945
         "albucore==0.0.16",
         "flet>=0.23.1",
+        "pymatting>=1.1.13",
     ],
     extras_require={"webcam": ["pyvirtualcam>=0.6.0"]},
     entry_points={
