@@ -89,7 +89,7 @@ class Remover:
         self.model = InSPyReNet_SwinB(depth=64, pretrained=False, threshold=None, **self.meta)
         self.model.eval()
         self.model.load_state_dict(
-            torch.load(os.path.join(ckpt_dir, ckpt_name), map_location="cpu"),
+            torch.load(os.path.join(ckpt_dir, ckpt_name), map_location="cpu", weights_only=True),
             strict=True,
         )
         self.model = self.model.to(self.device)
