@@ -18,7 +18,7 @@ import albumentations.pytorch as AP
 from PIL import Image
 from io import BytesIO
 from packaging import version
-from easydict import EasyDict
+from pymatting import estimate_foreground_ml
 
 filepath = os.path.abspath(__file__)
 repopath = os.path.split(filepath)[0]
@@ -196,6 +196,10 @@ class Remover:
             pred = 1 - pred
 
         img = np.array(img)
+        if threshold is None:
+            img = estimate_foreground_ml(img / 255.0, pred)
+            img = 255 * np.clip(img, 0., 1.) + 0.5
+            img = img.astype(np.uint8)
 
         if type.startswith("["):
             type = [int(i) for i in type[1:-1].split(",")]
