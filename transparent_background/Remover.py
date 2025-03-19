@@ -18,7 +18,6 @@ import albumentations.pytorch as AP
 from PIL import Image
 from io import BytesIO
 from packaging import version
-from easydict import EasyDict
 
 filepath = os.path.abspath(__file__)
 repopath = os.path.split(filepath)[0]
@@ -204,6 +203,19 @@ class Remover:
             img = (np.stack([pred] * 3, axis=-1) * 255).astype(np.uint8)
 
         elif type == "rgba":
+            if threshold is None:
+                # pymatting is imported here to avoid the overhead in other cases.
+                try:
+                    from pymatting.foreground.estimate_foreground_ml_cupy import estimate_foreground_ml_cupy as estimate_foreground_ml
+                except ImportError:
+                    try:
+                        from pymatting.foreground.estimate_foreground_ml_pyopencl import estimate_foreground_ml_pyopencl as estimate_foreground_ml
+                    except ImportError:
+                        from pymatting import estimate_foreground_ml
+                img = estimate_foreground_ml(img / 255.0, pred)
+                img = 255 * np.clip(img, 0., 1.) + 0.5
+                img = img.astype(np.uint8)
+
             r, g, b = cv2.split(img)
             pred = (pred * 255).astype(np.uint8)
             img = cv2.merge([r, g, b, pred])

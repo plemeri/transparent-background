@@ -131,6 +131,10 @@ pip uninstall torch torchvision torchaudio
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 ```
 
+#### Install GPU acceleration for RGBA output
+
+When generating RGBA output, the foreground color is estimated using [`pymatting.estimate_foreground_ml`](https://pymatting.github.io/foreground.html#estimate_foreground_ml), which implements [Germer et al., 2020](https://arxiv.org/abs/2006.14970).  [pymatting](https://pymatting.github.io/)'s optional GPU acceleration requires installing [CuPy](https://docs.cupy.dev/en/stable/install.html) (if the GPU supports CUDA) or [pyopencl](https://pypi.org/project/pyopencl/). These packages are detected at runtime if available.
+
 ### [New] Configuration
 
 `transparent-background` now supports external configuration rather than hard coded assets (e.g., checkpoint download url). 
@@ -194,7 +198,7 @@ $ transparent-background --source [SOURCE] --dest [DEST] --threshold [THRESHOLD]
 * `--dest [DEST]` (optional): Specify your destination folder. Default location is current directory.
 * `--threshold [THRESHOLD]` (optional): Designate threhsold value from `0.0` to `1.0` for hard prediction. Do not use if you want soft prediction.
 * `--type [TYPE]` (optional): Choose between `rgba`, `map` `green`, `blur`, `overlay`, and another image file. Default is `rgba`.
-    * `rgba` will generate RGBA output regarding saliency score as an alpha map. Note that this will not work for video and webcam input. 
+    * `rgba` will generate RGBA output regarding saliency score as an alpha map, and perform foreground color extraction using [pymatting](https://pymatting.github.io/foreground.html) if threshold is not set. Note that this will not work for video and webcam input. 
     * `map` will output saliency map only. 
     * `green` will change the background with green screen. 
     * `white` will change the background with white color. -> [2023.05.24] Contributed by [carpedm20](https://github.com/carpedm20) 
