@@ -229,7 +229,6 @@ class Remover:
             img = img * pred[..., np.newaxis] + bg * (1 - pred[..., np.newaxis])
 
         elif len(type) == 3:
-            print(type)
             bg = np.stack([np.ones_like(pred)] * 3, axis=-1) * type
             img = img * pred[..., np.newaxis] + bg * (1 - pred[..., np.newaxis])
 
