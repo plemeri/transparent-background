@@ -23,6 +23,18 @@ Image | Video | Webcam
 :-:|:-:|:-:
 <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_aeroplane.gif height=200px> | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_b5.gif height=200px> | <img src=https://raw.githubusercontent.com/plemeri/transparent-background/main/figures/demo_webcam.gif height=200px>
 
+## ©️ Citation
+If you make use of this work, please cite our work.
+```
+@inproceedings{kim2022revisiting,
+  title={Revisiting Image Pyramid Structure for High Resolution Salient Object Detection},
+  author={Kim, Taehun and Kim, Kunhee and Lee, Joonyeong and Cha, Dongmin and Lee, Jiho and Kim, Daijin},
+  booktitle={Proceedings of the Asian Conference on Computer Vision},
+  pages={108--124},
+  year={2022}
+}
+```
+
 ## :rotating_light: Notice
 * `--jit` option, also known as TorchScript option is widely used recently for disabling dynamic resizing for stable output. Since it wasn't mean to be used in this way, I added `--resize` option. For those who used `--jit` option because of the stability, you don't have to specify anymore. You may also access to this option in python API and GUI mode.
   * Default option is `--resize static` which provides less detailed prediction but more stable
