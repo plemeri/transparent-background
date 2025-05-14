@@ -158,7 +158,10 @@ class Remover:
             try:
                 from pymatting.foreground.estimate_foreground_ml_pyopencl import estimate_foreground_ml_pyopencl as estimate_foreground_ml
             except ImportError:
-                from pymatting import estimate_foreground_ml
+                try:
+                    from pymatting import estimate_foreground_ml
+                except ImportError:
+                    warnings.warn('Failed to load pymatting. Ignore this message if post-processing is not needed')
                 
         self.matting_fn = estimate_foreground_ml
         
