@@ -16,9 +16,9 @@ try:
         Text,
     )
     try:
-        from flet import Icons
+        from flet import icons
     except ImportError:
-        from flet import icons as Icons
+        from flet import Icons as icons
         
 except:
     warnings.warn('Failed to import flet. Ignore this message when you do not need GUI mode.')
