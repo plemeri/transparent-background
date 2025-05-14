@@ -150,6 +150,18 @@ class Remover:
         desc = "Mode={}, Device={}, Torchscript={}".format(
             mode, self.device, "enabled" if jit else "disabled"
         )
+        
+        estimate_foreground_ml = None
+        try:
+            from pymatting.foreground.estimate_foreground_ml_cupy import estimate_foreground_ml_cupy as estimate_foreground_ml
+        except ImportError:
+            try:
+                from pymatting.foreground.estimate_foreground_ml_pyopencl import estimate_foreground_ml_pyopencl as estimate_foreground_ml
+            except ImportError:
+                from pymatting import estimate_foreground_ml
+                
+        self.matting_fn = estimate_foreground_ml
+        
         print("Settings -> {}".format(desc))
 
     def process(self, img, type="rgba", threshold=None, reverse=False):
@@ -203,16 +215,8 @@ class Remover:
             img = (np.stack([pred] * 3, axis=-1) * 255).astype(np.uint8)
 
         elif type == "rgba":
-            if threshold is None:
-                # pymatting is imported here to avoid the overhead in other cases.
-                try:
-                    from pymatting.foreground.estimate_foreground_ml_cupy import estimate_foreground_ml_cupy as estimate_foreground_ml
-                except ImportError:
-                    try:
-                        from pymatting.foreground.estimate_foreground_ml_pyopencl import estimate_foreground_ml_pyopencl as estimate_foreground_ml
-                    except ImportError:
-                        from pymatting import estimate_foreground_ml
-                img = estimate_foreground_ml(img / 255.0, pred)
+            if threshold is None and self.matting_fn is not None:
+                img = self.matting_fn(img / 255.0, pred)
                 img = 255 * np.clip(img, 0., 1.) + 0.5
                 img = img.astype(np.uint8)
 

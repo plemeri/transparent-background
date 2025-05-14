@@ -1,19 +1,27 @@
-import flet as ft
-from flet import (
-    ElevatedButton,
-    FilePicker,
-    FilePickerResultEvent,
-    Page,
-    Row,
-    Text,
-    icons,
-)
 import os
 import torch
 import logging
 
 from transparent_background.utils import *
 from transparent_background.Remover import *
+
+try:
+    import flet as ft
+    from flet import (
+        ElevatedButton,
+        FilePicker,
+        FilePickerResultEvent,
+        Page,
+        Row,
+        Text,
+    )
+    try:
+        from flet import Icons
+    except ImportError:
+        from flet import icons as Icons
+        
+except:
+    warnings.warn('Failed to import flet. Ignore this message when you do not need GUI mode.')
 
 logging.basicConfig(level=logging.WARN)
 logging.getLogger("flet_runtime").setLevel(logging.WARN)

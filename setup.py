@@ -12,7 +12,7 @@ os.makedirs(os.path.join(cfg_path, ".transparent-background"), exist_ok=True)
 
 setuptools.setup(
     name="transparent-background",
-    version="1.3.3",
+    version="1.3.4",
     author="Taehun Kim",
     author_email="taehoon1018@postech.ac.kr",
     description="Make images with transparent background",
@@ -44,10 +44,11 @@ setuptools.setup(
         "albumentations>=1.3.1",
         # TODO: remove pin of albucore once this bug is fixed https://github.com/albumentations-team/albumentations/issues/1945
         "albucore>=0.0.16",
-        "flet>=0.23.1",
         "pymatting>=1.1.13",
     ],
-    extras_require={"webcam": ["pyvirtualcam>=0.6.0"]},
+    extras_require={
+        "webcam": ["pyvirtualcam>=0.6.0"],
+        "gui":   ["flet>=0.23.1"]},
     entry_points={
         "console_scripts": [
             "transparent-background=transparent_background:console",

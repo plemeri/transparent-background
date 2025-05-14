@@ -40,6 +40,8 @@ If you make use of this work, please cite our work.
   * Default option is `--resize static` which provides less detailed prediction but more stable
   * `--resize dynamic` option was the previous default option which was disabled by `--jit` option previously. This will provide more detailed prediction but less stable than `--resize static` option.
 
+* `flet` has been moved to extra dependency since GUI mode is not used for most active users, and causing import error for latest version. Please install with `pip install transparent-background[gui]` 
+
 ## :newspaper: News
 
 * Our package is currently not working properly on small images without `--fast` argument. Sorry for the inconvenience and we'll fix this issue with better algorithm coming out shortly.
@@ -109,13 +111,26 @@ sudo apt install zenity
 
 ### Install `transparent-background`
 * Note: please specify `extra-index-url` as below if you want to use gpu, particularly on Windows.
+  * CUDA 11.8
+    ```
+    --extra-index-url https://download.pytorch.org/whl/cu118
+    ```
+  * CUDA 12.8
+    ```
+    --extra-index-url https://download.pytorch.org/whl/cu128
+    ```
 #### Install from `pypi`
 ```bash
 pip install --extra-index-url https://download.pytorch.org/whl/cu118 transparent-background # install with official pytorch
 ```
   ##### With webcam support (not stable)
   ```bash
-  pip install transparent-background[webcam] # with webcam dependency
+  pip install --extra-index-url https://download.pytorch.org/whl/cu118 transparent-background[webcam] # with webcam dependency
+  ```
+
+  ##### With gui support
+  ```bash
+  pip install --extra-index-url https://download.pytorch.org/whl/cu118 transparent-background[gui] # with gui dependency (flet)
   ```
 
 #### Install from Github
