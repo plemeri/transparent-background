@@ -17,8 +17,10 @@ try:
     )
     try:
         from flet import icons
+        from flet import colors
     except ImportError:
         from flet import Icons as icons
+        from flet import Colors as colors
         
 except:
     warnings.warn('Failed to import flet. Ignore this message when you do not need GUI mode.')
@@ -148,13 +150,13 @@ def main(page):
     page.theme_mode = ft.ThemeMode.LIGHT
     c = ft.Switch(label="Dark mode", on_change=theme_changed)
 
-    output_text = ft.Text(color=ft.colors.BLACK)
+    output_text = ft.Text(color=colors.BLACK)
     output_text.value = 'Type: {}, Mode: {}, Device: {}, Threshold: {}, Resize: {}, Format: {}'.format(options['output_type'], options['mode'], options['device'], options['threshold'], options['resize'], options['format'])
     output_text_container = ft.Container(
                     content=output_text,
                     margin=10,
                     padding=10,
-                    bgcolor=ft.colors.GREEN_100,
+                    bgcolor=colors.GREEN_100,
                     border_radius=10,
                 )
 
@@ -249,24 +251,24 @@ def main(page):
     pick_files_dialog = FilePicker(on_result=pick_files_result)
 
     get_directory_dialog = FilePicker(on_result=get_directory_result)
-    file_path = Text(color=ft.colors.BLACK)
+    file_path = Text(color=colors.BLACK)
     file_path.value = 'Input file or directory will be displayed'
     file_path_container = ft.Container(
                 content=file_path,
                 margin=10,
                 padding=10,
-                bgcolor=ft.colors.AMBER,
+                bgcolor=colors.AMBER,
                 border_radius=10,
             )
 
     get_dest_dialog = FilePicker(on_result=get_dest_result)
-    dest_path = Text(color=ft.colors.BLACK)
+    dest_path = Text(color=colors.BLACK)
     dest_path.value = 'Output file or directory will be displayed'
     dest_path_container = ft.Container(
             content=dest_path,
             margin=10,
             padding=10,
-            bgcolor=ft.colors.CYAN_200,
+            bgcolor=colors.CYAN_200,
             border_radius=10,
         )
 
