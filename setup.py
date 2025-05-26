@@ -41,9 +41,7 @@ setuptools.setup(
         "wget>=3.2",
         "easydict>=1.10",
         "pyyaml>=6.0",
-        "albumentations>=1.3.1",
-        # TODO: remove pin of albucore once this bug is fixed https://github.com/albumentations-team/albumentations/issues/1945
-        "albucore>=0.0.16",
+        "albumentations>=1.4.16",
         "pymatting>=1.1.13",
     ],
     extras_require={
