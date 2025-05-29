@@ -223,7 +223,7 @@ $ transparent-background --source [SOURCE] --dest [DEST] --threshold [THRESHOLD]
     * Folder containing videos - `path/to/vid/folder`
     * Integer for webcam address - `0` (e.g., if your webcam is at `/dev/video0`.)
 * `--dest [DEST]` (optional): Specify your destination folder. Default location is current directory.
-* `--threshold [THRESHOLD]` (optional): Designate threhsold value from `0.0` to `1.0` for hard prediction. Do not use if you want soft prediction.
+* `--threshold [THRESHOLD]` (optional): Designate threshold value from `0.0` to `1.0` for hard prediction. Do not use if you want soft prediction.
 * `--type [TYPE]` (optional): Choose between `rgba`, `map` `green`, `blur`, `overlay`, and another image file. Default is `rgba`.
     * `rgba` will generate RGBA output regarding saliency score as an alpha map, and perform foreground color extraction using [pymatting](https://pymatting.github.io/foreground.html) if threshold is not set. Note that this will not work for video and webcam input. 
     * `map` will output saliency map only. 
@@ -262,13 +262,13 @@ out = remover.process(img) # default setting - transparent background
 out = remover.process(img, type='rgba') # same as above
 out = remover.process(img, type='map') # object map only
 out = remover.process(img, type='green') # image matting - green screen
-out = remover.process(img, type='white') # change backround with white color
+out = remover.process(img, type='white') # change background with white color
 out = remover.process(img, type=[255, 0, 0]) # change background with color code [255, 0, 0]
 out = remover.process(img, type='blur') # blur background
 out = remover.process(img, type='overlay') # overlay object map onto the image
 out = remover.process(img, type='samples/background.jpg') # use another image as a background
 
-out = remover.process(img, threshold=0.5) # use threhold parameter for hard prediction.
+out = remover.process(img, threshold=0.5) # use threshold parameter for hard prediction.
 out = remover.process(img, reverse=True) # reverse output. background -> foreground
 
 out.save('output.png') # save result
