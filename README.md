@@ -54,6 +54,7 @@ If you make use of this work, please cite our work.
 <img src=https://github.com/user-attachments/assets/5252be1c-338c-4340-a6a5-5c421a1bf550 width=400px>
 
 * [2024.10.05] `--format`, `--resize` and `--reverse` options are implemented. See Command Line and Usage sections for more details.
+* [2026.07.08] `transparent-background` total download counts reached 5,000,000 :smile:
 
 
 ## :inbox_tray: Installation
